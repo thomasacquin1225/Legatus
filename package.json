@@ -1,35 +1,37 @@
 {
-  "name": "se-2",
+  "name": "legatus",
   "version": "0.0.1",
   "private": true,
   "workspaces": {
     "packages": [
       "packages/nextjs",
-      "packages/foundry"
+      "packages/foundry",
+      "packages/backend"
     ]
   },
   "scripts": {
-    "account": "yarn workspace @se-2/foundry account",
-    "fork": "yarn workspace @se-2/foundry fork",
-    "verify": "yarn workspace @se-2/foundry verify",
-    "compile": "yarn workspace @se-2/foundry compile",
-    "compile:circuits": "yarn workspace @se-2/foundry compile:circuits",
-    "chain": "yarn workspace @se-2/foundry chain",
-    "deploy": "yarn workspace @se-2/foundry deploy",
-    "deploy:verify": "yarn workspace @se-2/foundry deploy:verify",
-    "foundry:lint": "yarn workspace @se-2/foundry lint",
-    "foundry:test": "yarn workspace @se-2/foundry test",
-    "generate": "yarn workspace @se-2/foundry generate",
-    "generate:verifier": "yarn workspace @se-2/foundry generate:verifier",
-    "start": "yarn workspace @se-2/nextjs dev",
-    "next:lint": "yarn workspace @se-2/nextjs lint",
-    "next:format": "yarn workspace @se-2/nextjs format",
-    "next:check-types": "yarn workspace @se-2/nextjs check-types",
+    "account": "yarn workspace @legatus/foundry account",
+    "fork": "yarn workspace @legatus/foundry fork",
+    "verify": "yarn workspace @legatus/foundry verify",
+    "compile": "yarn workspace @legatus/foundry compile",
+    "compile:circuits": "yarn workspace @legatus/foundry compile:circuits",
+    "chain": "yarn workspace @legatus/foundry chain",
+    "deploy": "yarn workspace @legatus/foundry deploy",
+    "deploy:verify": "yarn workspace @legatus/foundry deploy:verify",
+    "foundry:lint": "yarn workspace @legatus/foundry lint",
+    "foundry:test": "yarn workspace @legatus/foundry test",
+    "generate": "yarn workspace @legatus/foundry generate",
+    "generate:verifier": "yarn workspace @legatus/foundry generate:verifier",
+    "start": "yarn workspace @legatus/nextjs dev",
+    "start:backend": "yarn workspace @legatus/backend start:backend",
+    "next:lint": "yarn workspace @legatus/nextjs lint",
+    "next:format": "yarn workspace @legatus/nextjs format",
+    "next:check-types": "yarn workspace @legatus/nextjs check-types",
     "postinstall": "husky install",
     "precommit": "lint-staged",
-    "prove": "yarn workspace @se-2/foundry prove",
-    "vercel": "yarn workspace @se-2/nextjs vercel",
-    "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo"
+    "prove": "yarn workspace @legatus/foundry prove",
+    "vercel": "yarn workspace @legatus/nextjs vercel",
+    "vercel:yolo": "yarn workspace @legatus/nextjs vercel:yolo"
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
