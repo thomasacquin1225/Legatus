@@ -13,3 +13,6 @@ docs/
 # Dotenv file
 .env
 localhost.json
+
+circuits/target
+circuits/proofs
