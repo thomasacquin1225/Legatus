@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 interface IAaveAdapter {
-    function deposit(address _token, uint256 _amount) external;
+    function depositToAave(address asset, uint256 amount) external payable;
 
-    function withdraw(address _token, uint256 _amount) external;
+    function withdrawFromAave(address asset, uint256 amount) external;
 }
