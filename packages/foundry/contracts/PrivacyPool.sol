@@ -13,6 +13,18 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
 
     bytes32 public immutable PROTOCOL;
 
+    event Deposit(
+        address asset,
+        uint256 amount,
+        uint256 timestamp
+    );
+
+    event Withdraw(
+        address asset,
+        uint256 amount,
+        uint256 timestamp
+    );
+
     error InvalidAmount();
     error InsufficientMsgValue();
     error InsufficientAllowanceOrBalance();
@@ -27,6 +39,8 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
         ) 
     {
         PROTOCOL = AAVE;
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(OPERATOR_ROLE, msg.sender);
     }
 
     function deposit(address asset, uint256 amount) external payable nonReentrant {
@@ -46,6 +60,7 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
         if (PROTOCOL == AAVE) {
             depositToAave(asset, amount);
         }
+        emit Deposit(asset, amount, block.timestamp);
     }
 
     function withdraw(address asset, uint256 amount) external nonReentrant {
@@ -55,9 +70,10 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
         if (PROTOCOL == AAVE) {
             IERC20(aaveToken[asset]).transferFrom(address(this), msg.sender, amount);
         }
+        emit Withdraw(asset, amount, block.timestamp);
     }
 
-    function setAaveToken(address token, address aToken) public onlyRole(OPERATOR_ROLE) {
-        aaveToken[token] = aToken;
+    function setAaveToken(address asset, address aToken) public onlyRole(OPERATOR_ROLE) {
+        aaveToken[asset] = aToken;
     }
 }
