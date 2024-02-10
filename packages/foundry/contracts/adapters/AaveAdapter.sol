@@ -5,13 +5,16 @@ import {IPoolAddressesProvider} from "@aave/core-v3/contracts/interfaces/IPoolAd
 import {IPool} from "@aave/core-v3/contracts/interfaces/IPool.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../interfaces/IWrappedTokenGatewayV3.sol";
-import "../interfaces/IAaveAdapter.sol";
 
-contract AaveAdapter is IAaveAdapter {
-    IWrappedTokenGatewayV3 wethGateway;
+contract AaveAdapter {
+    address public constant ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
+    IWrappedTokenGatewayV3 public immutable wethGateway;
     IPoolAddressesProvider public immutable poolAddressesProvider;
-    mapping(address => address) public aaveToken;
+
+    mapping(address => address) aaveToken;
+
+    error InvalidAsset();
 
     constructor(
         IPoolAddressesProvider _poolAddressesProvider,
@@ -21,9 +24,11 @@ contract AaveAdapter is IAaveAdapter {
         wethGateway = _wethGateway;
     }
 
-    function depositToAave(address asset, uint256 amount) public payable {
+    function depositToAave(address asset, uint256 amount) internal {
+        if (aaveToken[asset] == address(0)) revert InvalidAsset();
+
         IPool pool = IPool(poolAddressesProvider.getPool());
-        if (asset == address(0)) {
+        if (asset == ETH_ADDRESS) {
             wethGateway.depositETH{value: amount}(address(pool), address(this), 0);
         } else {
             IERC20 token = IERC20(asset);
@@ -33,9 +38,11 @@ contract AaveAdapter is IAaveAdapter {
         }
     }
 
-    function withdrawFromAave(address asset, uint256 amount) public {
+    function withdrawFromAave(address asset, uint256 amount) internal {
+        if (aaveToken[asset] == address(0)) revert InvalidAsset();
+        
         IPool pool = IPool(poolAddressesProvider.getPool());        
-        if (asset == address(0)) {
+        if (asset == ETH_ADDRESS) {
             IERC20(aaveToken[asset]).approve(address(wethGateway), amount);
             wethGateway.withdrawETH(address(pool), amount, address(this));
         } else {

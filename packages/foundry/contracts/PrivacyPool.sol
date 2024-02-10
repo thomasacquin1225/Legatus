@@ -2,15 +2,20 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IWrappedTokenGatewayV3.sol";
 import "./adapters/AaveAdapter.sol";
 
-contract PrivacyPool is AaveAdapter, AccessControl {
+contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant AAVE = keccak256("AAVE");
+
     bytes32 public immutable PROTOCOL;
 
-    bytes32 public constant MINTER_ROLE = keccak256("OPERATOR_ROLE");
-    bytes32 public constant AAVE = keccak256("AAVE");
+    error InvalidAmount();
+    error InsufficientMsgValue();
+    error InsufficientAllowanceOrBalance();
 
     constructor(
         IPoolAddressesProvider _poolAddressesProvider,
@@ -24,7 +29,35 @@ contract PrivacyPool is AaveAdapter, AccessControl {
         PROTOCOL = AAVE;
     }
 
-    function setAaveToken(address _token, address _aaveToken) public onlyRole(MINTER_ROLE) {
-        aaveToken[_token] = _aaveToken;
+    function deposit(address asset, uint256 amount) external payable nonReentrant {
+        if (asset == address(0)) revert InvalidAsset();
+        if (amount == 0) revert InvalidAmount();
+
+        if (asset == ETH_ADDRESS) {
+            if (msg.value < amount) revert InsufficientMsgValue();
+        } else {
+            if (
+                IERC20(asset).balanceOf(msg.sender) < amount ||
+                IERC20(asset).allowance(msg.sender, address(this)) < amount
+            ) 
+                revert InsufficientAllowanceOrBalance();
+        }
+
+        if (PROTOCOL == AAVE) {
+            depositToAave(asset, amount);
+        }
+    }
+
+    function withdraw(address asset, uint256 amount) external nonReentrant {
+        if (asset == address(0)) revert InvalidAsset();
+        if (amount == 0) revert InvalidAmount();
+
+        if (PROTOCOL == AAVE) {
+            IERC20(aaveToken[asset]).transferFrom(address(this), msg.sender, amount);
+        }
+    }
+
+    function setAaveToken(address token, address aToken) public onlyRole(OPERATOR_ROLE) {
+        aaveToken[token] = aToken;
     }
 }
