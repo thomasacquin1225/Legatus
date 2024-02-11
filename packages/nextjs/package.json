@@ -54,12 +54,12 @@
     "vercel": "^28.15.1"
   },
   "browser": {
+    "bufferutil": false,
     "fs": false,
+    "net": false,
+    "os": false,
     "path": false,
-    "os": false, 
-    "net": false, 
     "tls": false,
-    "utf-8-validate": false,
-    "bufferutil": false
+    "utf-8-validate": false
   }
 }

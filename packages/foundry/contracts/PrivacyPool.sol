@@ -5,9 +5,12 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IWrappedTokenGatewayV3.sol";
+import "./interfaces/IVerifier.sol";
 import "./adapters/AaveAdapter.sol";
 
 contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
+    IVerifier public verifier;
+
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant AAVE = keccak256("AAVE");
 
@@ -31,7 +34,8 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
 
     constructor(
         IPoolAddressesProvider _poolAddressesProvider,
-        IWrappedTokenGatewayV3 _wethGateway
+        IWrappedTokenGatewayV3 _wethGateway,
+        IVerifier _verifier
     ) 
         AaveAdapter(
             _poolAddressesProvider, 
@@ -39,6 +43,7 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
         ) 
     {
         PROTOCOL = AAVE;
+        verifier = _verifier;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
     }
@@ -75,5 +80,9 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
 
     function setAaveToken(address asset, address aToken) public onlyRole(OPERATOR_ROLE) {
         aaveToken[asset] = aToken;
+    }
+
+    function setVerifier(IVerifier _verifier) public onlyRole(OPERATOR_ROLE) {
+        verifier = _verifier;
     }
 }
