@@ -6,10 +6,21 @@ const Home: NextPage = () => {
   const [ethAmount, setEthAmount] = useState("");
 
   const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
   };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  // const toggleDropdown = () => {
+  //   setIsOpen(!isOpen);
+  // };
 
   return (
     <>
@@ -147,43 +158,225 @@ const Home: NextPage = () => {
 
     <div className="ml-44 mt-10">
       <div className="flex justify-center flex-row">
-        <button type="button" className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Swap</button>
-        <button type="button" className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Send</button>
-        <button type="button" className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Buy</button>
+        {/* <button type="button" className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Swap</button> */}
+        <button type="button" onClick={() => setActiveTab('deposit')} className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Deposit</button>
+        <button type="button" onClick={() => setActiveTab('withdraw')} className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Withdraw</button>
       </div>
       <div className="flex justify-center">
-      <div className="w-main-container">
+      <div className="w-main-container mt-4">
+        {
+        activeTab === 'deposit' ?
         <div className="h-large-div bg-gray-800 mb-4 rounded">
-
           <div className="flex flex-row">
               <div className="basis-1/2">
-                  <p className="text-white-200 font-bold text-4xl pt-3 pl-4">You pay</p>
+                  <p className="light:text-black font-bold text-4xl pt-3 pl-4 dark:text-white-200">Deposit</p>
+              </div>
+              <div className="basis-1/2 flex items-center justify-end mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
               </div>
           </div>
-
-          <form className="pt-2">   
+          <form className="pt-4">   
               <div className="relative">
                   <EtherInput value={ethAmount} onChange={amount => setEthAmount(amount)} />
               </div>
               <div className="flex-row">
-                <div className="flex justify-end mr-2">
+                <div className="flex justify-end items-end mt-4 mr-2 ">
                     <div className="flex">
-                        <p className="justify-end font-bold text-white pt-3">Balance : 0.206</p>
+                        <p className="justify-end font-bold text-white pt-3 mr-2">Balance : 0.206</p>
+                        {/* <button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-full text-sm px-3 py-2  mb-2 ml-4 mt-2 dark:bg-gray-800 dark:text-white text-bold dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Max</button> */}
+                    </div>
+                </div>
+              </div>
+          </form>          
+        </div>
+          :
+          <div className="h-large-div bg-gray-800 mb-4 rounded">
+          <div className="flex flex-row justify-between">
+              <div className="basis-1/2">
+                  <p className="light:text-black font-bold text-4xl pt-3 pl-4 dark:text-white-200">Withdraw</p>
+              </div>
+              <div className="basis-1/2 flex items-center justify-end mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+              </div>
+          </div>
+          <form className="pt-4">   
+              <div className="relative">
+                  <EtherInput value={ethAmount} onChange={amount => setEthAmount(amount)} />
+              </div>
+              <div className="flex-row">
+                <div className="flex justify-end items-end mt-4 mr-2 ">
+                    <div className="flex">
+                        <p className="justify-end font-bold text-white pt-3 ">Balance : 0.206</p>
                         <button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-full text-sm px-3 py-2  mb-2 ml-4 mt-2 dark:bg-gray-800 dark:text-white text-bold dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Max</button>
                     </div>
                 </div>
               </div>
           </form>          
-
         </div>
-        <div className="relative  items-center">
+        
+        }
+        
+        {/* <div className="relative  items-center">
       <button type="button" className="absolute top=-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 transform rotate-90 text-black bg-white hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-black font-medium rounded-full text-sm p-3 inline-flex items-center z-10 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-white">
           <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
           </svg>
         </button>
+        </div> */}
+      </div>
+    </div>
+      <div>
+      <div className="mt-4 rounded">
+        <button className="btn w-full" onClick={openModal}>
+          <svg
+            className="w-4 h-4 me-2 -ms-1 text-[#626890]"
+            aria-hidden="true"
+            focusable="false"
+            data-prefix="fab"
+            data-icon="ethereum"
+            role="img"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 320 512"
+          >
+            <path
+              fill="currentColor"
+              d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"
+            ></path>
+          </svg>
+          Select a Token
+        </button>
+      </div>
+      {isModalOpen && (
+        <div id="default-modal" tabIndex={-1}  className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 bottom-0 left-0 z-50 flex justify-center items-center ">
+          <div className="absolute inset-0 bg-black opacity-70"></div>
+        <div className="relative p-4 w-full max-w-2xl max-h-full">
+        <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <div className="flex items-center justify-between md:p-3 rounded-t">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    Select a Token
+                </h3>
+                <button onClick={closeModal} type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
+                    <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span className="sr-only">Close modal</span>
+                </button>
+            </div>
+              <div className="relative">
+        <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+            <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+            </svg>
         </div>
-        <div className="h-large-div bg-gray-800 rounded">
+        <input type="search" id="default-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search ETH, Uniswap..." required/>
+        <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+    </div>
+            {/* <input type="search" id="default-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-grey-200 focus:border-grey-200 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-grey-200 dark:focus:border-grey-200" placeholder="Search Mockups, Logos..." required /> */}
+            <div className="p-4 md:p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text font-semibold text-gray-900 dark:text-white">
+                    Popular tokens
+                </h3>
+              <a>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </a>
+                </div>
+                <div className="flex flex-col gap-2">
+          <div className="w-full bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 ">
+              <button type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+                  <img
+                      className="w-6 h-6 me-2.5 "
+                      src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
+                      alt="UNIswap Logo"
+                    />
+                  <div className="flex flex-col justify-start items-start">
+                  Wrapped Bitcoin
+                  <span className="text-sm text-gray-400">WBTC</span>
+                  </div>
+              </button>
+              <button type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+                  <img
+                      className="w-6 h-6 me-2.5 "
+                      src="https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=029"
+                      alt="UNIswap Logo"
+                    />
+                  <div className="flex flex-col justify-start items-start">
+                  Uniswap
+                  <span className="text-sm text-gray-400">UNI</span>
+                  </div>
+              </button>
+              <button type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+                  <img
+                      className="w-6 h-6 me-2.5 "
+                      src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=029"
+                      alt="Eth Logo"
+                    />
+                  <div className="flex flex-col justify-start items-start ">
+                  Ethereum
+                  <span className="text-sm text-gray-400">ETH</span>
+                  </div>
+              </button>
+              <button type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium rounded-b-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+                  <img
+                      className="w-6 h-6 me-2.5 "
+                      src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=029"
+                      alt="Bitcoin Logo"
+                    />
+                  <div className="flex flex-col justify-start items-start">
+                  Bitcoin
+                  <span className="text-sm text-gray-400">BTC</span>
+                  </div>
+              </button>
+          </div>
+              </div>
+            </div>
+            <div className="flex justify-end items-end p-4  border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button data-modal-hide="default-modal" type="button" className=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-7 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Select</button>
+            </div>
+        </div>
+      </div>
+    </div>
+      )}
+    </div>
+    </div>
+    <div className="fixed bottom-8 right-0 mb-4 mr-4">
+        <div className="chat chat-end ">
+        <div className="chat-image avatar">
+          <div className="w-10 rounded-full">
+            <img alt="Tailwind CSS chat bubble component" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+          </div>
+        </div>
+        <div className="chat-header opacity-50">
+          Support
+        </div>
+        <div className="chat-bubble">Need any help?</div>
+      </div>
+    </div>
+
+    
+    
+      </div>
+    </>
+  );
+};
+
+export default Home;
+
+
+
+
+
+
+
+
+// Reference block for earlier design
+{/* <div className="h-large-div bg-gray-800 rounded">
 
           <div className="flex flex-row">
               <div className="basis-1/2">
@@ -231,19 +424,4 @@ const Home: NextPage = () => {
       )}
             </div>
         </form>
-        </div>
-      </div>
-    </div>
-      <div className=" mt-4 rounded">
-        <button className="btn w-full">
-          <svg className="w-4 h-4 me-2 -ms-1 text-[#626890]" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="ethereum" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"></path></svg>
-      Select a Token</button>
-      </div>
-    </div>
-    
-      </div>
-    </>
-  );
-};
-
-export default Home;
+        </div> */}
