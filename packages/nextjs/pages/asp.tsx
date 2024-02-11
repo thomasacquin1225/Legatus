@@ -116,6 +116,20 @@ const Home: NextPage = () => {
 
     </div>
     </div>
+        <div className="fixed bottom-8 right-0 mb-4 mr-4">
+        <div className="chat chat-end ">
+        <div className="chat-image avatar">
+          <div className="w-10 rounded-full">
+            <img alt="Tailwind CSS chat bubble component" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+          </div>
+        </div>
+        <div className="chat-header opacity-50">
+          Support
+        </div>
+        <div className="chat-bubble">Need any help?</div>
+      </div>
+    </div>
+
       </div>
     </>
   );
