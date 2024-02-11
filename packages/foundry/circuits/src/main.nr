@@ -1,3 +1,7 @@
-fn main(x : Field, y : pub Field) {
-    assert(x == y);
+use dep::std;
+
+fn main(message : [Field; 62], index : Field, hashpath : [Field; 40], root : pub Field) {
+    let leaf = std::hash::pedersen_hash(message);
+    let merkle_root = std::merkle::compute_merkle_root(leaf, index, hashpath);
+    assert(merkle_root == root);
 }
