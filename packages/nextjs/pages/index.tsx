@@ -128,39 +128,29 @@ const Home: NextPage = () => {
             </ul>
         </div>
       </aside>
-  {/* <div className="ml-56"> 
-      <div className="flex flex-col justify-between">
-      <div className="flex flex-row">
-        <div className="w-block">
-          <div className="bg-gray-900 text-white py-6 mt-10 px-12 font-[sans-serif]">
-            <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
-              <div className="text-center md:text-left mb-6 md:mb-0">
-                  <h2 className="text-3xl font-bold mb-4">Can we add a cool image</h2>
+
+    <div className="ml-44 mt-6">
+      <div className="flex justify-center flex-row">
+        {/* <button type="button" className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Swap</button> */}
+        {/* <button type="button" onClick={() => setActiveTab('deposit')} className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Deposit</button>
+        <button type="button" onClick={() => setActiveTab('withdraw')} className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Withdraw</button> */}
+            <div className=" stats bg-primary text-primary-content">
+            <div className="stat">
+              <div className="stat-title">Account balance</div>
+              <div className="stat-value">$89,400</div>
+              <div className="stat-actions">
+                <button onClick={() => setActiveTab('deposit')} className="btn btn-sm btn-success">Deposit</button>
+              </div>
+            </div>
+            
+            <div className="stat">
+              <div className="stat-title">Current balance</div>
+              <div className="stat-value">$89,400</div>
+              <div className="stat-actions">
+                <button onClick={() => setActiveTab('withdraw')} className="btn btn-sm">Withdrawal</button> 
               </div>
             </div>
           </div>
-        </div>
-        <div className="w-block h-full "></div>
-        <div className="w-block h-full "></div>
-      </div>
-      <div className="flex flex-row">
-        <div className="flex-1 ">Block 4</div>
-        <div className="flex-1 ">Block 5</div>
-        <div className="flex-1 ">Block 6</div>
-      </div>
-      <div className="flex flex-row">
-        <div className="flex-1 ">Block 7</div>
-        <div className="flex-1 ">Block 8</div>
-        <div className="flex-1 ">Block 9</div>
-      </div>
-    </div>
-     </div> */}
-
-    <div className="ml-44 mt-10">
-      <div className="flex justify-center flex-row">
-        {/* <button type="button" className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Swap</button> */}
-        <button type="button" onClick={() => setActiveTab('deposit')} className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Deposit</button>
-        <button type="button" onClick={() => setActiveTab('withdraw')} className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Withdraw</button>
       </div>
       <div className="flex justify-center">
       <div className="w-main-container mt-4">
@@ -222,13 +212,6 @@ const Home: NextPage = () => {
         
         }
         
-        {/* <div className="relative  items-center">
-      <button type="button" className="absolute top=-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 transform rotate-90 text-black bg-white hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-black font-medium rounded-full text-sm p-3 inline-flex items-center z-10 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-white">
-          <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-          </svg>
-        </button>
-        </div> */}
       </div>
     </div>
       <div>
@@ -359,7 +342,6 @@ const Home: NextPage = () => {
       </div>
     </div>
 
-    
     
       </div>
     </>
