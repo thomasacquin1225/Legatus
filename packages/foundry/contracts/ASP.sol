@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 contract ASP is AccessControl{
     mapping(bytes32 => bool) merkleRoots;
     mapping(bytes32 => bool) subMerkleRoots;
+    
     bytes32 public constant ASP_ROLE = keccak256("ASP_ROLE");
 
     error MerkleRootNotFound();

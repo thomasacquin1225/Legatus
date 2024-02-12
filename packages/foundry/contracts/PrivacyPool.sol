@@ -9,6 +9,8 @@ import "./interfaces/IVerifier.sol";
 import "./adapters/AaveAdapter.sol";
 
 contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
+    mapping(uint256 => bool) public isUsedNullifier;
+
     IVerifier public verifier;
 
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -25,10 +27,11 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
     event Withdraw(
         address asset,
         uint256 amount,
-        uint256 timestamp
+        uint256 nullifier
     );
 
     error InvalidAmount();
+    error InvalidNullifier();
     error InsufficientMsgValue();
     error InsufficientAllowanceOrBalance();
 
@@ -68,14 +71,20 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
         emit Deposit(asset, amount, block.timestamp);
     }
 
-    function withdraw(address asset, uint256 amount) external nonReentrant {
+    function withdraw(
+        address asset, 
+        uint256 amount,
+        uint256 nullifier
+    ) external nonReentrant {
         if (asset == address(0)) revert InvalidAsset();
         if (amount == 0) revert InvalidAmount();
+        if (isUsedNullifier[nullifier]) revert InvalidNullifier();
 
         if (PROTOCOL == AAVE) {
             IERC20(aaveToken[asset]).transferFrom(address(this), msg.sender, amount);
         }
-        emit Withdraw(asset, amount, block.timestamp);
+        isUsedNullifier[nullifier] = true;
+        emit Withdraw(asset, amount, nullifier);
     }
 
     function setAaveToken(address asset, address aToken) public onlyRole(OPERATOR_ROLE) {
