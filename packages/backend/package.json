@@ -2,7 +2,8 @@
     "name": "@legatus/backend",
     "version": "0.0.1",
     "scripts": {
-        "start:backend": "ts-node index.ts"
+        "start:backend": "ts-node index.ts",
+        "start:asp": "ts-node asp.ts"
     },
     "dependencies": {
         "@openzeppelin/merkle-tree": "^1.0.6",

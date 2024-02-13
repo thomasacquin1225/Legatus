@@ -26,6 +26,7 @@
     "generate:verifier": "yarn workspace @legatus/foundry generate:verifier",
     "start": "yarn workspace @legatus/nextjs dev",
     "start:backend": "yarn workspace @legatus/backend start:backend",
+    "start:asp": "yarn workspace @legatus/backend start:asp",
     "next:lint": "yarn workspace @legatus/nextjs lint",
     "next:format": "yarn workspace @legatus/nextjs format",
     "next:check-types": "yarn workspace @legatus/nextjs check-types",
