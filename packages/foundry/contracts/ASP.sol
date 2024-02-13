@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract ASP is AccessControl{
+contract ASP is AccessControl {
     mapping(bytes32 => bool) merkleRoots;
     mapping(bytes32 => bool) subMerkleRoots;
     

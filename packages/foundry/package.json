@@ -4,7 +4,7 @@
   "scripts": {
     "account": "node script/ListAccount.js",
     "chain": "anvil --config-out localhost.json",
-    "fork": "anvil --fork-url ${0:-mainnet} --chain-id 31337 --config-out localhost.json",
+    "fork": "anvil --fork-url ${0:-scrollSepolia} --chain-id 31337 --config-out localhost.json",
     "compile": "forge compile",
     "compile:circuits": "cd circuits && nargo compile && cd ..",
     "check:circuits": "cd circuits && nargo check && cd ..",

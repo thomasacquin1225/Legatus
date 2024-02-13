@@ -1,22 +1,20 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IWrappedTokenGatewayV3.sol";
 import "./interfaces/IVerifier.sol";
 import "./adapters/AaveAdapter.sol";
 
-contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
+contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUpgradeable {
     mapping(uint256 => bool) public isUsedNullifier;
 
-    IVerifier public verifier;
+    bytes32 public PROTOCOL;
 
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant AAVE = keccak256("AAVE");
-
-    bytes32 public immutable PROTOCOL;
 
     event Deposit(
         address asset,
@@ -35,20 +33,24 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
     error InsufficientMsgValue();
     error InsufficientAllowanceOrBalance();
 
-    constructor(
+    constructor() {}
+
+    function initialize(
         IPoolAddressesProvider _poolAddressesProvider,
         IWrappedTokenGatewayV3 _wethGateway,
-        IVerifier _verifier
+        IERC20 _aaveWETH
     ) 
-        AaveAdapter(
-            _poolAddressesProvider, 
-            _wethGateway
-        ) 
+        public 
+        initializer 
     {
-        PROTOCOL = AAVE;
-        verifier = _verifier;
+        poolAddressesProvider = _poolAddressesProvider;
+        wethGateway = _wethGateway;
+        __ReentrancyGuard_init();
+        __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
+        PROTOCOL = AAVE;
+        aaveToken[ETH_ADDRESS] = address(_aaveWETH);
     }
 
     function deposit(address asset, uint256 amount) external payable nonReentrant {
@@ -81,7 +83,7 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
         if (isUsedNullifier[nullifier]) revert InvalidNullifier();
 
         if (PROTOCOL == AAVE) {
-            IERC20(aaveToken[asset]).transferFrom(address(this), msg.sender, amount);
+            IERC20(aaveToken[asset]).transfer(msg.sender, amount);
         }
         isUsedNullifier[nullifier] = true;
         emit Withdraw(asset, amount, nullifier);
@@ -89,9 +91,5 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuard, AccessControl {
 
     function setAaveToken(address asset, address aToken) public onlyRole(OPERATOR_ROLE) {
         aaveToken[asset] = aToken;
-    }
-
-    function setVerifier(IVerifier _verifier) public onlyRole(OPERATOR_ROLE) {
-        verifier = _verifier;
     }
 }
