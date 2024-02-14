@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "../contracts/PrivacyPool.sol";
+import "../contracts/UltraVerifier.sol";
 import "./DeployHelpers.s.sol";
 
 contract DeployScript is ScaffoldETHDeploy {
@@ -15,11 +16,20 @@ contract DeployScript is ScaffoldETHDeploy {
             );
         }
         vm.startBroadcast(deployerPrivateKey);
+        UltraVerifier verifier = new UltraVerifier();
+        console.logString(
+            string.concat(
+                "Verifier deployed at: ",
+                vm.toString(address(verifier))
+            )
+        );
+
         PrivacyPool privacyPool = new PrivacyPool();
         privacyPool.initialize(
             IPoolAddressesProvider(0x52A27dC690F8652288194Dd2bc523863eBdEa236),
             IWrappedTokenGatewayV3(0x57ce905CfD7f986A929A26b006f797d181dB706e),
-            IERC20(0x9E8CEC4F2F4596141B62e88966D7167E9db555aD)
+            IERC20(0x9E8CEC4F2F4596141B62e88966D7167E9db555aD),
+            IVerifier(address(verifier))
         );
         console.logString(
             string.concat(

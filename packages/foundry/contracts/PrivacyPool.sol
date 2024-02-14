@@ -11,6 +11,7 @@ import "./adapters/AaveAdapter.sol";
 contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUpgradeable {
     mapping(uint256 => bool) public isUsedNullifier;
 
+    IVerifier public verifier;
     bytes32 public PROTOCOL;
 
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -38,13 +39,15 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUp
     function initialize(
         IPoolAddressesProvider _poolAddressesProvider,
         IWrappedTokenGatewayV3 _wethGateway,
-        IERC20 _aaveWETH
+        IERC20 _aaveWETH,
+        IVerifier _verifier
     ) 
         public 
         initializer 
     {
         poolAddressesProvider = _poolAddressesProvider;
         wethGateway = _wethGateway;
+        verifier = _verifier;
         __ReentrancyGuard_init();
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -91,5 +94,9 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUp
 
     function setAaveToken(address asset, address aToken) public onlyRole(OPERATOR_ROLE) {
         aaveToken[asset] = aToken;
+    }
+
+    function setVerifier(IVerifier _verifier) public onlyRole(OPERATOR_ROLE) {
+        verifier = _verifier;
     }
 }
