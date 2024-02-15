@@ -9,6 +9,7 @@
     "compile:circuits": "cd circuits && nargo compile && cd ..",
     "check:circuits": "cd circuits && nargo check && cd ..",
     "deploy:sindri": "node script/sindriDeploy.js",
+    "verify:circuits": "cd circuits && nargo verify && cd ..",
     "prove": "cd circuits && nargo prove && cd ..",
     "generate:verifier": "cd circuits && nargo codegen-verifier && cd ..",
     "generate": "node script/generateAccount.js",

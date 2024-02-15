@@ -19,6 +19,7 @@
     "check:circuits": "yarn workspace @legatus/foundry check:circuits",
     "deploy": "yarn workspace @legatus/foundry deploy",
     "deploy:sindri": "yarn workspace @legatus/foundry deploy:sindri",
+    "verify:circuits": "yarn workspace @legatus/foundry verify:circuits",
     "deploy:verify": "yarn workspace @legatus/foundry deploy:verify",
     "foundry:lint": "yarn workspace @legatus/foundry lint",
     "foundry:test": "yarn workspace @legatus/foundry test",
