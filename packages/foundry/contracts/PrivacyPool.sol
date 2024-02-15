@@ -5,6 +5,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IWrappedTokenGatewayV3.sol";
+import "./interfaces/IASP.sol";
 import "./interfaces/IVerifier.sol";
 import "./adapters/AaveAdapter.sol";
 
@@ -14,20 +15,22 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUp
     mapping(bytes32 => bool) public isUsedNullifier;
 
     bytes32 public PROTOCOL;
+    IASP public asp;
     IVerifier public verifier;
 
     bytes32 public constant AAVE = keccak256("AAVE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");    
 
     event Deposit(
+        address depositor,
         address asset,
         uint256 amount,
         bytes32 commitment
     );
 
     event Withdraw(
-        address asset,
         address recipient,
+        address asset,
         uint256 amount,
         bytes32 nullifier
     );
@@ -46,6 +49,7 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUp
         IPoolAddressesProvider _poolAddressesProvider,
         IWrappedTokenGatewayV3 _wethGateway,
         IERC20 _aaveWETH,
+        IASP _asp,
         IVerifier _verifier
     ) 
         public 
@@ -53,6 +57,7 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUp
     {
         poolAddressesProvider = _poolAddressesProvider;
         wethGateway = _wethGateway;
+        asp = _asp;
         verifier = _verifier;
         __ReentrancyGuard_init();
         __AccessControl_init();
@@ -85,7 +90,7 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUp
             depositToAave(asset, amount);
         }
         isKnownCommitment[commitment] = true;
-        emit Deposit(asset, amount, commitment);
+        emit Deposit(msg.sender, asset, amount, commitment);
     }
 
     function withdraw(
@@ -120,7 +125,11 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUp
             IERC20(aaveToken[asset]).transfer(recipient, amount);
         }
         isUsedNullifier[nullifier] = true;
-        emit Withdraw(asset, recipient, amount, nullifier);
+        emit Withdraw(recipient, asset, amount, nullifier);
+    }
+
+    function setASP(IASP _asp) public onlyRole(OPERATOR_ROLE) {
+        asp = _asp;
     }
 
     function setVerifier(IVerifier _verifier) public onlyRole(OPERATOR_ROLE) {
