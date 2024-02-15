@@ -9,6 +9,9 @@ contract ASP is AccessControl {
     
     bytes32 public constant ASP_ROLE = keccak256("ASP_ROLE");
 
+    event MerkleRootPublished(bytes32 merkleRoot);
+    event SubMerkleRootPublished(bytes32 merkleRoot, bytes32 subMerkleRoot);
+
     error MerkleRootNotFound();
 
     constructor() {
@@ -16,16 +19,18 @@ contract ASP is AccessControl {
         _grantRole(ASP_ROLE, msg.sender);
     }
 
-    function publishMerkleRoot(bytes32 _merkleRoot) external onlyRole(ASP_ROLE) {
-        merkleRoots[_merkleRoot] = true;
+    function publishMerkleRoot(bytes32 merkleRoot) external onlyRole(ASP_ROLE) {
+        merkleRoots[merkleRoot] = true;
+        emit MerkleRootPublished(merkleRoot);
     }
 
-    function publishSubMerkleRoot(bytes32 _merkleRoot, bytes32 _subMerkleRoot) external onlyRole(ASP_ROLE) {
-        if (!merkleRoots[_merkleRoot]) revert MerkleRootNotFound();
-        subMerkleRoots[_subMerkleRoot] = true;
+    function publishSubMerkleRoot(bytes32 merkleRoot, bytes32 subMerkleRoot) external onlyRole(ASP_ROLE) {
+        if (!merkleRoots[merkleRoot]) revert MerkleRootNotFound();
+        subMerkleRoots[subMerkleRoot] = true;
+        emit SubMerkleRootPublished(merkleRoot, subMerkleRoot);
     }
 
-    function isPublished(bytes32 _merkleRoot, bytes32 _subMerkleRoot) external view returns (bool) {
-        return merkleRoots[_merkleRoot] && subMerkleRoots[_subMerkleRoot];
+    function isPublished(bytes32 merkleRoot, bytes32 subMerkleRoot) public view returns (bool) {
+        return merkleRoots[merkleRoot] && subMerkleRoots[subMerkleRoot];
     }
 }
