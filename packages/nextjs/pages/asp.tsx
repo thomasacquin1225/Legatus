@@ -5,6 +5,14 @@ import type { NextPage } from "next";
 const Home: NextPage = () => {
     let merkle_tree_root = "merkle_tree_root";    
     let subset_merkle_root = "subset_merkle_root";
+    const data = [
+    "101112", "131415", "161718",
+    "192021", "222324", "252627",
+    "282930", "313233", "343536",
+    "373839", "404142", "434445"
+  ];
+
+
   return (
     <>
 
@@ -103,18 +111,49 @@ const Home: NextPage = () => {
         </div>
       </aside>
 
-    <div className="mr-40 ml-40 mt-10">
-      <div className="flex justify-center flex-col">
-        <h4 className="text-3xl font-normal leading-normal mt-0 mb-2 text-blueGray-800">
+    <div className="mr-40 ml-40 mt-2">
+      <div className="flex justify-center flex">
+        <div className="flex flex-col ">
+        <h4 className="text-1xl font-normal leading-normal mt-0 mb-2 text-blueGray-800">
         Merkle Tree root
         </h4>
        <CopyButton content={merkle_tree_root} />
-       <h4 className="text-3xl font-normal leading-normal mt-6 mb-2 text-blueGray-800">
+        </div>
+        <div className="flex flex-col">
+       <h4 className="text-1xl font-normal leading-normal mb-2 text-blueGray-800">
         Subset merkle root
         </h4>
         <CopyButton content={subset_merkle_root} />
-
+        </div>
     </div>
+    
+    <div className="pt-8">
+      <div className="overflow-x-auto">
+        <table className="table table-zebra">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Depositor</th>
+              <th>Commitment</th>
+              <th>Subset root</th>
+            </tr>
+          </thead>
+          <tbody>
+          {data.map((item, index) => (
+            index % 3 === 0 && (
+              <tr key={index / 3}>
+                <th>{index / 3 + 1}</th>
+                {[0, 1, 2].map((i) => (
+                  <td key={index + i}>{data[index + i]}</td>
+                ))}
+              </tr>
+            )
+          ))}
+        </tbody>
+        </table>
+      </div>
+    </div>
+
     </div>
         <div className="fixed bottom-8 right-0 mb-4 mr-4">
         <div className="chat chat-end ">
@@ -178,14 +217,14 @@ const CopyButton: React.FC<CopyButtonProps> = ({ content }) => {
   const { copied, ref, onCopy } = useClipboard({ duration: 4000 });
 
   return (
-    <div>
+    <div >
     <div className="flex flex-row ">
       <div ref={ref} className="">
-        <blockquote className="p-2 bg-gray-100 rounded dark:bg-gray-800">
-            <p className="text-xl italic leading-relaxed text-gray-900 dark:text-white">{content}</p>
+        <blockquote className="p-1 bg-gray-100 rounded dark:bg-gray-800">
+            <p className="text italic leading-relaxed text-gray-900 dark:text-white">{content}</p>
         </blockquote>
       </div>
-      <button className="ml-3" onClick={onCopy}>
+      <button className="ml-1" onClick={onCopy}>
         {copied ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +232,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ content }) => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="w-10 h-10"
+            className="w-7 h-7"
           >
             <path
               strokeLinecap="round"
@@ -208,7 +247,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ content }) => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="w-10 h-10"
+            className="w-7 h-7"
           >
             <path
               strokeLinecap="round"
@@ -219,13 +258,11 @@ const CopyButton: React.FC<CopyButtonProps> = ({ content }) => {
         )}
       </button>
     </div>
-    <div className="mt-2">
+    <div className="mt-1">
       {copied ? 
       <>
-      <kbd className="kbd">CMD ⌘</kbd>
-      +
-      <kbd className="kbd">V</kbd>
-      or
+      <kbd className="kbd">CMD ⌘</kbd> 
+      /
       <kbd className="kbd">Ctrl</kbd>
       +
       <kbd className="kbd">V</kbd>
