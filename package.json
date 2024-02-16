@@ -13,6 +13,7 @@
     "account": "yarn workspace @legatus/foundry account",
     "fork": "yarn workspace @legatus/foundry fork",
     "verify": "yarn workspace @legatus/foundry verify",
+    "clean": "yarn workspace @legatus/foundry clean",
     "compile": "yarn workspace @legatus/foundry compile",
     "compile:circuits": "yarn workspace @legatus/foundry compile:circuits",
     "chain": "yarn workspace @legatus/foundry chain",

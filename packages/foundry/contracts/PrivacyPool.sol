@@ -32,7 +32,9 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUp
         address recipient,
         address asset,
         uint256 amount,
-        bytes32 nullifier
+        bytes32 nullifier,
+        bytes32 root,
+        bytes32 subtreeRoot
     );
 
     error InvalidAmount();
@@ -109,6 +111,8 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUp
         if (root == bytes32(0) ||
             subtreeRoot == bytes32(0)) revert InvalidRoot();
 
+        if (!asp.isPublished(root, subtreeRoot)) revert InvalidRoot();
+
         bytes32[] memory proofArgs = new bytes32[](2);
         proofArgs[0] = nullifier;
         proofArgs[1] = root;
@@ -125,7 +129,7 @@ contract PrivacyPool is AaveAdapter, ReentrancyGuardUpgradeable, AccessControlUp
             IERC20(aaveToken[asset]).transfer(recipient, amount);
         }
         isUsedNullifier[nullifier] = true;
-        emit Withdraw(recipient, asset, amount, nullifier);
+        emit Withdraw(recipient, asset, amount, nullifier, root, subtreeRoot);
     }
 
     function setASP(IASP _asp) public onlyRole(OPERATOR_ROLE) {
