@@ -1,8 +1,6 @@
-// import { StandardMerkleTree,  } from "@openzeppelin/merkle-tree";
-// import fs from "fs";
 import express, {Request, Response, NextFunction} from 'express';
 import cors from 'cors';
-import { dataSource } from './datasource'
+import { dataSource } from './datasource';
 import { GroupService } from "./groups/group.service";
 import { Group } from "./groups/group";
 import { Member } from "./groups/member";
