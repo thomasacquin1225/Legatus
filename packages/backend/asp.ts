@@ -26,6 +26,7 @@ const asp = new ethers.Contract(process.env.ASP_CONTRACT || '0x', ASP.abi, provi
 let poseidon: any;
 let merkleTree: PoseidonMerkleTree;
 let subMerkleTree: PoseidonMerkleTree;
+let excludedDepositors: string[] = [];
 
 async function startup() {
     try {
@@ -37,7 +38,7 @@ async function startup() {
         if (error) {
             throw(error);
         }
-        if (deposits) {
+        if (deposits && deposits?.length > 0) {
             merkleTree.buildMerkleTree(deposits.map((d: any) => d.commitment));
             subMerkleTree.buildMerkleTree(deposits.map((d: any) => d.commitment));
         }
@@ -90,6 +91,16 @@ app.get('/sub-merkle-root', async (req, res) => {
     try {
         const root = subMerkleTree.getRoot();
         res.status(200).json({ root });
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
+
+app.get('/merkle-roots', async (req, res) => {
+    try {
+        const root = merkleTree.getRoot();
+        const subRoot = subMerkleTree.getRoot();
+        res.status(200).json({ root, subRoot });
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -165,6 +176,14 @@ app.get('/deposits/sub-tree', async (req, res) => {
     }
 });
 
+app.get('/excluded-depositors', async (req, res) => {
+    try {
+        res.status(200).json({ depositors: excludedDepositors });
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
+
 app.post('/exclude-depositor', async (req, res) => {
     try {
         const { depositor } = req.body;
@@ -172,7 +191,7 @@ app.post('/exclude-depositor', async (req, res) => {
         if (error) {
             throw(error);
         }
-        if (deposits) {
+        if (deposits && deposits.length > 0) {
             let subtree = subMerkleTree.getTree();
             const commitments = deposits.map((d: any) => d.commitment);
             subtree = subtree.filter((c: string) => !commitments.includes(c));           
@@ -183,6 +202,7 @@ app.post('/exclude-depositor', async (req, res) => {
             );
             await tx.wait();
             console.log('Excluded depositor:', depositor);
+            excludedDepositors.push(depositor);
             console.log('Published new sub merkle root on-chain:', subMerkleTree.getRoot());
         }
         res.status(200).json({ message: 'Depositor excluded' });
