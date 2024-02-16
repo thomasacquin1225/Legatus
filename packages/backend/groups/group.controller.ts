@@ -12,7 +12,7 @@ export class GroupController {
         this.router.get("/:id/fingerprint", this.getGroupFingerprint);
         this.router.post("/:id/member", this.addMember);
         this.router.delete("/:id/member", this.removeMember);
-        console.log("Router setup complete")
+        console.log("Router setup complete");
     }
 
     getGroup = async (req: Request, res: Response, next: NextFunction) => {
@@ -21,7 +21,7 @@ export class GroupController {
             const group = await this.groupService.getGroup(id);
             res.status(200).json(group);
         } catch (err) {
-            next(err)
+            next(err);
         }
     }
 
@@ -32,7 +32,7 @@ export class GroupController {
             const group = await this.groupService.createGroup(treeDepth, members);
             res.status(200).json(group);
         } catch (err) {
-            next(err)
+            next(err);
         }
     }
 
@@ -42,7 +42,7 @@ export class GroupController {
             const groupRoot = this.groupService.getGroupFingerprint(id);
             res.status(200).json({fingerprint: groupRoot});
         } catch (err) {
-            next(err)
+            next(err);
         }
     }
 
@@ -53,7 +53,7 @@ export class GroupController {
             await this.groupService.addMember(id, memberId);
             res.status(200).json({success: true});
         } catch (err) {
-            next(err)
+            next(err);
         }
     }
 
@@ -64,7 +64,7 @@ export class GroupController {
             await this.groupService.removeMember(id, memberId);
             res.status(200).json({success: true});
         } catch (err) {
-            next(err)
+            next(err);
         }
     }
 

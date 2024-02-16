@@ -11,4 +11,4 @@ export const dataSource = new DataSource({
   "migrations": [
     "src/migration/**/*.ts"
   ],
-})
+});

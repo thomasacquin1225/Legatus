@@ -2,8 +2,7 @@
     "name": "@legatus/backend",
     "version": "0.0.1",
     "scripts": {
-        "dev:backend": "nodemon",
-        "start:backend": "ts-node index.ts",
+        "start:backend": "nodemon",
         "start:asp": "ts-node asp.ts"
     },
     "dependencies": {

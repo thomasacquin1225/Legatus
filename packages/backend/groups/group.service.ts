@@ -14,13 +14,13 @@ export class GroupService {
     }
 
     async syncCachedGroups() {
-        const groups = await this.groupRepository.find({relations: {members: true}})
+        const groups = await this.groupRepository.find({relations: {members: true}});
         for (const g of groups) {
-            const members = g.members?.map((member) => member.id)
-            const cachedGroup = new CachedGroup(g.id, g.treeDepth, members)
-            this.cachedGroups.set(g.id, cachedGroup)
+            const members = g.members?.map((member) => member.id);
+            const cachedGroup = new CachedGroup(g.id, g.treeDepth, members);
+            this.cachedGroups.set(g.id, cachedGroup);
         }
-        console.log("Semaphore Groups Loaded")
+        console.log("Semaphore Groups Loaded");
     }
 
     async createMember(memberId: string) {
@@ -28,23 +28,23 @@ export class GroupService {
             where: {
                 id: memberId
             }
-        })
+        });
         if (!member) {
-            member = await this.memberRepository.save(new Member(memberId))
+            member = await this.memberRepository.save(new Member(memberId));
         }
-        return member
+        return member;
     }
 
     async createGroup(treeDepth: number = 30, memberIds: string[] = []): Promise<Group> {
         if (treeDepth < 16 || treeDepth > 32) {
             throw new Error("The tree depth must be between 16 and 32");
         }
-        const members = await Promise.all(memberIds.map(async (memberId) => await this.createMember(memberId)))
-        const newGroup = new Group(treeDepth, members)
+        const members = await Promise.all(memberIds.map(async (memberId) => await this.createMember(memberId)));
+        const newGroup = new Group(treeDepth, members);
         const savedGroup = await this.groupRepository.save(newGroup);
         const id = savedGroup.id;
-        const cachedGroup = new CachedGroup(id, treeDepth, memberIds)
-        this.cachedGroups.set(id, cachedGroup)
+        const cachedGroup = new CachedGroup(id, treeDepth, memberIds);
+        this.cachedGroups.set(id, cachedGroup);
         return savedGroup;
     }
 
@@ -52,9 +52,9 @@ export class GroupService {
         const group = await this.groupRepository.findOne({
             where: { id: groupId },
             relations: { members: true }
-        })
+        });
         if (!group) {
-            throw new Error("Group not found")
+            throw new Error("Group not found");
         }
         return group;
     }
@@ -62,13 +62,13 @@ export class GroupService {
     async addMember(groupId: number, memberId: string) {
         const group = await this.getGroup(groupId);
         if (group.members.find((m) => m.id == memberId)) {
-            throw new Error("Mmeber alread exists");
+            throw new Error("Member already exists");
         }
         const member = await this.createMember(memberId);
-        group.members.push(member)
+        group.members.push(member);
         await this.groupRepository.save(group);
         const cachedGroup = this.cachedGroups.get(groupId);
-        cachedGroup?.addMember(memberId)
+        cachedGroup?.addMember(memberId);
     }
 
     async removeMember(groupId: number, memberId: string) {
@@ -81,7 +81,7 @@ export class GroupService {
         await this.groupRepository.save(group);
         const cachedGroup = this.cachedGroups.get(groupId)!;
         const cachedMemberIdx = cachedGroup.members.findIndex((m) => m = memberId);
-        cachedGroup?.removeMember(cachedMemberIdx)
+        cachedGroup?.removeMember(cachedMemberIdx);
     }
 
     getGroupFingerprint(groupId: number): string {
