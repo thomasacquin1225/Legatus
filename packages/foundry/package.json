@@ -4,6 +4,7 @@
   "scripts": {
     "account": "node script/ListAccount.js",
     "chain": "anvil --config-out localhost.json",
+    "clean": "forge clean",
     "fork": "anvil --fork-url ${0:-scrollSepolia} --chain-id 31337 --config-out localhost.json",
     "compile": "forge compile",
     "compile:circuits": "cd circuits && nargo compile && cd ..",
@@ -11,7 +12,7 @@
     "deploy:sindri": "node script/sindriDeploy.js",
     "verify:circuits": "cd circuits && nargo verify && cd ..",
     "prove": "cd circuits && nargo prove && cd ..",
-    "generate:verifier": "cd circuits && nargo codegen-verifier && cd ..",
+    "generate:verifier": "rm -f contracts/UltraVerifier.sol && cd circuits && nargo codegen-verifier && cd .. && cp circuits/contract/circuits/plonk_vk.sol contracts/UltraVerifier.sol",
     "generate": "node script/generateAccount.js",
     "deploy": "forge build --build-info --build-info-path out/build-info/ && forge script script/Deploy.s.sol --rpc-url ${1:-default_network} --broadcast --legacy && node script/generateTsAbis.js",
     "deploy:verify": "forge build --build-info --build-info-path out/build-info/ && forge script script/Deploy.s.sol --rpc-url ${1:-default_network} --broadcast --legacy --verify ; node script/generateTsAbis.js",

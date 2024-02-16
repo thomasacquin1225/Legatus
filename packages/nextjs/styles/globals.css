@@ -39,3 +39,6 @@ p {
   height: 250px; /* Set the height of large divs according to your requirement */
 }
 
+.h-large-div-withdraw {
+   height: 402px;
+}
