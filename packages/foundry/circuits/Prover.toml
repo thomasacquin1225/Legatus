@@ -1,6 +1,6 @@
-hash_path = ["", "", "", "", "", "", "", "", "", ""]
-index = ""
-leaf = ""
-nullifier = ""
-root = ""
-secret = ""
+hash_path = ["0x24bc0992dcd3976e2e5bfc53792da422197bc59c331a95ca07f791b25a877c7f", "0x1c373a29ff9942c83b73b82660cbfc2b74d702a1928e7a2157585221fc3bdb31", "0", "0", "0", "0", "0", "0", "0", "0"]
+index = "4"
+leaf = "0x2b044990f1a53e5ebfa30b9c9fed3cabc5e08e6cbf98066a4314eda641a5cc95"
+nullifier = "0x2425c133002e7a2e47fbe39e0e309ebc6b48a4162a6891683bb28bda48f578c5"
+root = "0x1f876bb355f03eaaf3eca2825755ecf49672cdc7c3ef4968a640c998bdc0f0b8"
+secret = "0x027ad43cf6415556989fa626bbea0ad4856e5702e493bd6e2e28af8741fce31d"
