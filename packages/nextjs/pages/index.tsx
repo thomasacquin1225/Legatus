@@ -1,9 +1,9 @@
 import Link from "next/link";
 import {useState} from 'react';
 import type { NextPage } from "next";
-import { EtherInput } from "~~/components/scaffold-eth";
+import logo from '../public/logo.jpeg';
+import Image from "next/image";
 const Home: NextPage = () => {
-  const [ethAmount, setEthAmount] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
   const [selectedToken, setSelectedToken] = useState("");
@@ -31,7 +31,14 @@ const Home: NextPage = () => {
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
-
+  const handleAction = (tab: string) => {
+    if(tab === "deposit"){
+      console.log("Deposit logic");
+    }
+    else if(tab === "withdraw"){
+      console.log("Withdraw logic");
+    }
+  }
   return (
     <>
 
@@ -42,10 +49,11 @@ const Home: NextPage = () => {
             <ul className="space-y-2 font-medium">
               <li>
                   <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
-                        <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
-                        <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
-                    </svg>
+                    <Image
+                          className="w-8 h-8 "
+                          src={logo}
+                          alt="Bitcoin Logo"
+                        />
                     <span className="ms-3"><h1 className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-4xl"><span className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Legatus</span></h1></span>
                   </a>
               </li>
@@ -68,7 +76,7 @@ const Home: NextPage = () => {
                   </a>
               </li>
               <li>
-                  <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                  <a href="/groups" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                         <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
                     </svg>
@@ -350,7 +358,7 @@ const Home: NextPage = () => {
       </div>
     </div>
          <div className="mt-4 rounded">
-        <button className="btn w-full" onClick={openModal}>
+        <button className="btn w-full" onClick={() => selectedToken ? handleAction(activeTab) : openModal()}>
           <svg
             className="w-4 h-4 me-2 -ms-1 text-[#626890]"
             aria-hidden="true"

@@ -1,18 +1,12 @@
 import Link from "next/link";
-import React from 'react';
+import {useState} from 'react';
 import type { NextPage } from "next";
 import logo from '../public/logo.jpeg';
 import Image from "next/image";
 const Home: NextPage = () => {
-    let merkle_tree_root = "merkle_tree_root";    
-    let subset_merkle_root = "subset_merkle_root";
-    const data = [
-    "101112", "131415", "161718",
-    "192021", "222324", "252627",
-    "282930", "313233", "343536",
-    "373839", "404142", "434445"
-  ];
-
+  let Trapdoor = 129192558215777110638513793792888210935963329534859087782642362921360649668;
+  let Nullifier = 68855009744356229214731357941433659785201150948822507743904410139511193919;
+  let Commitment = 4533209967181941182345592374773937284832231193099483849438956915823454227006;
 
   return (
     <>
@@ -33,7 +27,7 @@ const Home: NextPage = () => {
                   </a>
               </li>
               <li>
-                  <a href="/" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                  <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
                         <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"/>
                     </svg>
@@ -51,7 +45,7 @@ const Home: NextPage = () => {
                   </a>
               </li>
               <li>
-                  <a href="/groups" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                  <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                         <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
                     </svg>
@@ -64,7 +58,6 @@ const Home: NextPage = () => {
                         <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z"/>
                     </svg>
                     <span className="flex-1 ms-3 whitespace-nowrap">Voting</span>
-                    {/* <span className="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">Soon</span> */}
                   </a>
               </li>
               <li>
@@ -113,51 +106,64 @@ const Home: NextPage = () => {
         </div>
       </aside>
 
-    <div className="mr-40 ml-40 mt-2">
-      <div className="flex justify-center flex">
-        <div className="flex flex-col ">
-        <h4 className="text-1xl font-normal leading-normal mt-0 mb-2 text-blueGray-800">
-        Merkle Tree root
-        </h4>
-       <CopyButton content={merkle_tree_root} />
-        </div>
-        <div className="flex flex-col">
-       <h4 className="text-1xl font-normal leading-normal mb-2 text-blueGray-800">
-        Subset merkle root
-        </h4>
-        <CopyButton content={subset_merkle_root} />
-        </div>
-    </div>
-    
-    <div className="pt-8">
-      <div className="overflow-x-auto">
-        <table className="table table-zebra">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Depositor</th>
-              <th>Commitment</th>
-              <th>Subset root</th>
-            </tr>
-          </thead>
-          <tbody>
-          {data.map((item, index) => (
-            index % 3 === 0 && (
-              <tr key={index / 3}>
-                <th>{index / 3 + 1}</th>
-                {[0, 1, 2].map((i) => (
-                  <td key={index + i}>{data[index + i]}</td>
-                ))}
-              </tr>
-            )
-          ))}
-        </tbody>
-        </table>
-      </div>
-    </div>
+    <div className="ml-44 mt-6">
+      <div className="flex justify-center flex-row">
+        
+        <h2 className="text-4xl font-bold dark:text-white">Identities</h2>
 
+      </div>
+      <div className="flex justify-center">
+      <div className=" mt-4">
+        <div className="px-4 py-4 bg-gray-800 mb-4 rounded">
+            <div className="flex flex-col">
+                <div className="flex">
+                    <h5 className="text-xl font-bold dark:text-white">Trapdoor : {Trapdoor}</h5>
+                </div>
+                <div className="flex">
+                    <h5 className="text-xl font-bold dark:text-white">Nullifier : {Nullifier} </h5>
+                </div>
+                <div className="flex">
+                    <h5 className="text-xl font-bold dark:text-white">Commitment : {Commitment}</h5>
+                </div>
+            </div>
+        </div>
+        </div>
     </div>
-        <div className="fixed bottom-8 right-0 mb-4 mr-4">
+    <div className="justify-center items-center flex">
+      <ol className="flex items-center w-full text-sm font-medium text-center text-gray-500 dark:text-gray-400 sm:text-base">
+          <li className="flex md:w-full items-center text-blue-600 dark:text-blue-500 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
+              <span className="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                  </svg>
+                  Identities
+              </span>
+          </li>
+          <li className="flex md:w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
+              <span className="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
+                  <span className="me-2">2</span>
+                  Groups 
+              </span>
+          </li>
+          <li className="flex items-center">
+              <span className="me-2">3</span>
+              Proofs
+          </li>
+      </ol>
+    </div>
+    <hr className="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+    <div className="mt-1 flex justify-end"> 
+      <a href="groups1">
+        <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none  font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 ">
+          Next
+          <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+          </svg>
+        </button>
+      </a>
+    </div>
+    </div>
+    <div className="fixed bottom-8 right-0 mb-4 mr-4">
         <div className="chat chat-end ">
         <div className="chat-image avatar">
           <div className="w-10 rounded-full">
@@ -171,108 +177,9 @@ const Home: NextPage = () => {
       </div>
     </div>
 
+    
       </div>
     </>
-  );
-};
-
-interface ClipboardProps {
-  duration?: number;
-}
-
-
-const useClipboard = (props: ClipboardProps) => {
-  const [copied, setCopied] = React.useState(false);
-  const ref = React.useRef<HTMLDivElement>(null);
-  const resetCopy = React.useRef<NodeJS.Timeout | null>(null);
-
-  const onCopy = React.useCallback(() => {
-    if (ref.current) {
-      navigator.clipboard
-        .writeText(ref.current.innerText)
-        .then(() => setCopied(true));
-    }
-  }, [ref]);
-
-  React.useEffect(() => {
-    if (copied) {
-      resetCopy.current = setTimeout(
-        () => setCopied(false),
-        props?.duration || 3000,
-      );
-    }
-
-    return () => {
-      if (resetCopy.current) {
-        clearTimeout(resetCopy.current);
-      }
-    };
-  }, [copied, props.duration]);
-
-  return { copied, ref, onCopy };
-};
-
-interface CopyButtonProps {
-  content: string;
-}
-const CopyButton: React.FC<CopyButtonProps> = ({ content }) => {
-  const { copied, ref, onCopy } = useClipboard({ duration: 4000 });
-
-  return (
-    <div >
-    <div className="flex flex-row ">
-      <div ref={ref} className="">
-        <blockquote className="p-1 bg-gray-100 rounded dark:bg-gray-800">
-            <p className="text italic leading-relaxed text-gray-900 dark:text-white">{content}</p>
-        </blockquote>
-      </div>
-      <button className="ml-1" onClick={onCopy}>
-        {copied ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="w-7 h-7"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
-            />
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="w-7 h-7"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"
-            />
-          </svg>
-        )}
-      </button>
-    </div>
-    <div className="mt-1">
-      {copied ? 
-      <>
-      <kbd className="kbd">CMD ⌘</kbd> 
-      /
-      <kbd className="kbd">Ctrl</kbd>
-      +
-      <kbd className="kbd">V</kbd>
-      </>
-      :
-      <></>}
-      </div>
-    </div>
   );
 };
 
