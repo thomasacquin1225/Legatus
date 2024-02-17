@@ -26,7 +26,6 @@ const asp = new ethers.Contract(process.env.ASP_CONTRACT || '0x', ASP.abi, provi
 let poseidon: any;
 let merkleTree: PoseidonMerkleTree;
 let subMerkleTree: PoseidonMerkleTree;
-let excludedDepositors: string[] = [];
 
 async function startup() {
     try {
@@ -186,6 +185,11 @@ app.get('/deposits/sub-tree', async (req, res) => {
 
 app.get('/excluded-depositors', async (req, res) => {
     try {
+        const { data: depositors, error } = await supabase.from('excluded-depositors').select('*');
+        if (error) {
+            throw(error);
+        }
+        const excludedDepositors = depositors.map((d: any) => d.address);
         res.status(200).json({ depositors: excludedDepositors });
     } catch (e) {
         res.status(500).json({ error: e });
@@ -209,8 +213,11 @@ app.post('/exclude-depositor', async (req, res) => {
                 merkleTree.getRoot() as BytesLike, subMerkleTree.getRoot() as BytesLike
             );
             await tx.wait();
+            const { data, error } = await supabase.from('excluded-depositors').insert([{ address: depositor }]);
+            if (error) {
+                throw(error);
+            }
             console.log('Excluded depositor:', depositor);
-            excludedDepositors.push(depositor);
             console.log('Published new sub merkle root on-chain:', subMerkleTree.getRoot());
         }
         res.status(200).json({ message: 'Depositor excluded' });
