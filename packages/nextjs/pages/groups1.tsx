@@ -6,13 +6,12 @@ import Image from "next/image";
 import { useAccount } from "wagmi";
 import { Identity } from "@semaphore-protocol/identity";
 import axios from "axios";
-
+import HashLoader from "react-spinners/HashLoader";
 const Home: NextPage = () => {
-
   const { address: connectedAddress } = useAccount();
   const [identity, setIdentity] = useState<Identity>();
   const [members, setMembers] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  let [loading, setLoading] = useState(false);
 
   useEffect(() => {
     try {
@@ -20,22 +19,22 @@ const Home: NextPage = () => {
       setIdentity(identity);
       const fetchMembers = async () => {
         try {
-         axios.get(
+          axios.get(
             (process.env.NEXT_PUBLIC_SEMAPHORE_API_URL || "http://localhost:3001") + "/group/" +
             (process.env.NEXT_PUBLIC_GROUP_ID || "1")
           )
-          .then(response => {
-            const members = response?.data?.members?.map((member: any) => member.id);
-            if (members) {
-              setMembers(members);
-            }
-          })
-          .catch(error => {
-            console.error(error);
-          });
+            .then(response => {
+              const members = response?.data?.members?.map((member: any) => member.id);
+              if (members) {
+                setMembers(members);
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
         } catch (error) {
           throw error;
-        }  
+        }
       }
       fetchMembers();
     } catch (error) {
@@ -44,19 +43,22 @@ const Home: NextPage = () => {
   }, []);
 
   const joinGroup = async () => {
-    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(true);
+    }, 100);
     try {
       axios.post(
         (process.env.NEXT_PUBLIC_SEMAPHORE_API_URL ?? "http://localhost:3001") + "/group/" +
         (process.env.NEXT_PUBLIC_GROUP_ID ?? "1") + "/member",
         { memberId: identity?.commitment?.toString() }
       )
-      .then(response => {
-        setMembers([...members || [], identity?.commitment?.toString() || ""]);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+        .then(response => {
+          setMembers([...members || [], identity?.commitment?.toString() || ""]);
+        })
+        .catch(error => {
+          console.error(error);
+        });
     } catch (error) {
       console.error(error);
     }
@@ -165,6 +167,7 @@ const Home: NextPage = () => {
               </div>
             </div>
           </div>
+
           <div className="justify-center items-center flex">
             <ol className="flex items-center w-full text-sm font-medium text-center text-gray-500 dark:text-gray-400 sm:text-base">
               <li className="flex md:w-full items-center text-blue-600 dark:text-blue-500 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
@@ -208,6 +211,12 @@ const Home: NextPage = () => {
               </button>
             </a>
           </div>
+        </div>
+        <div className={`fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-70 z-50 ${loading ? '' : 'hidden'}`}>
+          <HashLoader
+            color="#ffffff"
+            size="100"
+            loading={true} />
         </div>
         <div className="fixed bottom-8 right-0 mb-4 mr-4">
           <div className="chat chat-end ">

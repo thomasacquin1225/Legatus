@@ -4,8 +4,11 @@ import type { NextPage } from "next";
 import logo from '../public/logo.jpeg';
 import Image from "next/image";
 import React from "react";
+import HashLoader from "react-spinners/HashLoader";
+
 const Home: NextPage = () => {
   const [isOpen, setIsOpen] = useState(false);
+  let [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
   const [selectedToken, setSelectedToken] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,6 +20,15 @@ const Home: NextPage = () => {
 
   const handleCheckboxChange = (e: any) => {
     setIsChecked(e.target.checked);
+  };
+
+  const actualDeposit = () => {
+    setLoading(true);
+    closeDeposit();
+  };
+
+  const actualWithdraw = () => {
+    setLoading(true);
   };
 
   const openDeposit = () => {
@@ -56,6 +68,7 @@ const Home: NextPage = () => {
     }
     else if (tab === "withdraw") {
       console.log("Withdraw logic");
+      actualWithdraw();
     }
   }
   return (
@@ -337,6 +350,13 @@ const Home: NextPage = () => {
 
             </div>
           </div>
+          <div className={` flex flex-col fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-70 z-50 ${loading ? '' : 'hidden'}`}>
+            <p className="text-xl font-bold">Withdraw text goes here</p>
+            <HashLoader
+              color="#ffffff"
+              size="100"
+              loading={loading} />
+          </div>
           <div className="mt-4 rounded">
             <button className="btn w-full" onClick={() => selectedToken ? handleAction(activeTab) : openModal()}>
               <svg
@@ -507,6 +527,7 @@ const Home: NextPage = () => {
                         <button
                           className={`mt-4 px-4 py-2 btn w-full ${isChecked ? '' : 'opacity-50 cursor-not-allowed'}`}
                           disabled={!isChecked}
+                          onClick={actualDeposit}
                         >
                           Deposit
                         </button>

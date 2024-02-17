@@ -8,13 +8,14 @@ import { Identity } from "@semaphore-protocol/identity";
 import { Group } from "@semaphore-protocol/group";
 const { generateProof } = require("@semaphore-protocol/proof");
 import axios from "axios";
-
+import HashLoader from "react-spinners/HashLoader";
+let load = false;
 interface FeedbackModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
+const FeedbackModal: React.FC<FeedbackModalProps & { loading: boolean; setLoading: React.Dispatch<React.SetStateAction<boolean>> }> = ({ isOpen, onClose, loading, setLoading }) => {
 
   const { address: connectedAddress } = useAccount();
   const [identity, setIdentity] = useState<Identity>();
@@ -27,23 +28,23 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
       setIdentity(identity);
       const fetchMembers = async () => {
         try {
-         axios.get(
+          axios.get(
             (process.env.NEXT_PUBLIC_SEMAPHORE_API_URL || "http://localhost:3001") + "/group/" +
             (process.env.NEXT_PUBLIC_GROUP_ID || "1")
           )
-          .then(response => {
-            const members = response?.data?.members?.map((member: any) => member.id);
-            if (members) {
-              const group = new Group(1, 20, members);
-              setGroup(group);
-            }
-          })
-          .catch(error => {
-            console.error(error);
-          });
+            .then(response => {
+              const members = response?.data?.members?.map((member: any) => member.id);
+              if (members) {
+                const group = new Group(1, 20, members);
+                setGroup(group);
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
         } catch (error) {
           throw error;
-        }  
+        }
       }
       fetchMembers();
     } catch (error) {
@@ -53,29 +54,33 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
 
 
   const handleSubmit = async () => {
+    setLoading(true);
+    load = true;
     try {
       const fullProof = await generateProof(
-        identity as Identity, 
-        group as Group, 
-        (group as Group).root, 
+        identity as Identity,
+        group as Group,
+        (group as Group).root,
         feedbackText.length
       );
       axios.post(
         (process.env.NEXT_PUBLIC_SEMAPHORE_API_URL ?? "http://localhost:3001") + "/group/" +
         (process.env.NEXT_PUBLIC_GROUP_ID ?? "1") + "/signal",
-        { 
+        {
           memberId: identity?.commitment?.toString(),
           signalMsg: feedbackText?.toString(),
           proof: fullProof?.proof?.toString() || "",
         }
       )
-      .catch(error => {
-        console.error(error);
-      });
+        .catch(error => {
+          console.error(error);
+        });
     } catch (error) {
       console.error(error);
     }
     onClose();
+    setLoading(false);
+    load = false;
   };
 
   return (
@@ -115,6 +120,7 @@ const Home: NextPage = () => {
 
   const [signals, setSignals] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  let [loading, setLoading] = useState(false);
 
   useEffect(() => {
     try {
@@ -124,16 +130,16 @@ const Home: NextPage = () => {
             (process.env.NEXT_PUBLIC_SEMAPHORE_API_URL || "http://localhost:3001") + "/group/" +
             (process.env.NEXT_PUBLIC_GROUP_ID || "1") + "/signal"
           )
-          .then(response => {
-            const signals = response?.data.map((signal: any) => signal?.signalMsg);
-            setSignals(signals);
-          })
-          .catch(error => {
-            console.error(error);
-          });
+            .then(response => {
+              const signals = response?.data.map((signal: any) => signal?.signalMsg);
+              setSignals(signals);
+            })
+            .catch(error => {
+              console.error(error);
+            });
         } catch (error) {
           throw error;
-        }  
+        }
       }
       fetchSignals();
     } catch (error) {
@@ -227,7 +233,7 @@ const Home: NextPage = () => {
               <div className="px-4 py-4 bg-gray-800 mb-4 rounded">
                 <div className="flex flex-col">
                   <button onClick={openModal} className="btn mb-2">Send Message</button>
-                  <FeedbackModal isOpen={isModalOpen} onClose={closeModal} />
+                  <FeedbackModal isOpen={isModalOpen} onClose={closeModal} loading={loading} setLoading={setLoading} />
                   <div className="overflow-x-auto">
                     <table className="table">
                       <thead>
@@ -291,8 +297,13 @@ const Home: NextPage = () => {
                 Prev
               </button>
             </a>
-
           </div>
+        </div>
+        <div className={`fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-70 z-100 ${load ? '' : 'hidden'}`}>
+          <HashLoader
+            color="#ffffff"
+            size="100"
+            loading={load} />
         </div>
         <div className="fixed bottom-8 right-0 mb-4 mr-4">
           <div className="chat chat-end ">
