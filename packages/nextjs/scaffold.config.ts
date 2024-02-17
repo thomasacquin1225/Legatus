@@ -1,7 +1,7 @@
-import * as chains from "wagmi/chains";
+import * as defaultChains from "wagmi/chains";
 
 export type ScaffoldConfig = {
-  targetNetwork: chains.Chain;
+  targetNetwork: defaultChains.Chain;
   pollingInterval: number;
   alchemyApiKey: string;
   walletConnectProjectId: string;
@@ -9,9 +9,43 @@ export type ScaffoldConfig = {
   walletAutoConnect: boolean;
 };
 
+const scrollSepolia: defaultChains.Chain = {
+  id: 534351,
+  name: "Scroll Sepolia",
+  network: "scroll-sepolia",
+  nativeCurrency: {
+    name: "Scroll Sepolia Ether",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://sepolia-rpc.scroll.io"],
+    },
+    public: {
+      http: ["https://sepolia-rpc.scroll.io"],
+    }
+  },
+  blockExplorers: {
+    scrollscan: {
+      name: "Scrollscan",
+      url: "https://sepolia.scrollscan.dev",
+    },
+    default: {
+      name: "Scrollscan",
+      url: "https://sepolia.scrollscan.dev",
+    }
+  },
+};
+
+const chains = {
+  ...defaultChains,
+  scrollSepolia,
+};
+
 const scaffoldConfig = {
   // The network where your DApp lives in
-  targetNetwork: chains.foundry,
+  targetNetwork: chains.scrollSepolia,
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect on the local network

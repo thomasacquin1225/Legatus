@@ -1,5 +1,40 @@
-import * as chains from "wagmi/chains";
+import * as defaultChains from "wagmi/chains";
 import scaffoldConfig from "~~/scaffold.config";
+
+
+const scrollSepolia: defaultChains.Chain = {
+  id: 534351,
+  name: "Scroll Sepolia",
+  network: "scroll-sepolia",
+  nativeCurrency: {
+    name: "Scroll Sepolia Ether",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://sepolia-rpc.scroll.io"],
+    },
+    public: {
+      http: ["https://sepolia-rpc.scroll.io"],
+    }
+  },
+  blockExplorers: {
+    scrollscan: {
+      name: "Scrollscan",
+      url: "https://sepolia.scrollscan.dev",
+    },
+    default: {
+      name: "Scrollscan",
+      url: "https://sepolia.scrollscan.dev",
+    }
+  },
+};
+
+const chains = {
+  ...defaultChains,
+  scrollSepolia,
+};
 
 export type TChainAttributes = {
   // color | [lightThemeColor, darkThemeColor]
@@ -91,7 +126,7 @@ export function getBlockExplorerTxLink(chainId: number, txnHash: string) {
  * @param address
  * @returns block explorer address URL and etherscan URL if block explorer URL is not present for wagmi network
  */
-export function getBlockExplorerAddressLink(network: chains.Chain, address: string) {
+export function getBlockExplorerAddressLink(network: defaultChains.Chain, address: string) {
   const blockExplorerBaseURL = network.blockExplorers?.default?.url;
   if (network.id === chains.hardhat.id) {
     return `/blockexplorer/address/${address}`;
@@ -108,7 +143,7 @@ export function getBlockExplorerAddressLink(network: chains.Chain, address: stri
  * @returns targetNetwork object consisting targetNetwork from scaffold.config and extra network metadata
  */
 
-export function getTargetNetwork(): chains.Chain & Partial<TChainAttributes> {
+export function getTargetNetwork(): defaultChains.Chain & Partial<TChainAttributes> {
   const configuredNetwork = scaffoldConfig.targetNetwork;
 
   return {
