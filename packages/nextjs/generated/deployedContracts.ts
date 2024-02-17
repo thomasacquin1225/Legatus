@@ -5,7 +5,7 @@ const contracts = {
       chainId: "31337",
       contracts: {
         UltraVerifier: {
-          address: "0x79E8AB29Ff79805025c9462a2f2F12e9A496f81d",
+          address: "0x763e001F6cC30ebA4DeBfFf35910932e523dECd7",
           abi: [
             {
               type: "function",
@@ -88,7 +88,7 @@ const contracts = {
           ],
         },
         ASP: {
-          address: "0x0Dd99d9f56A14E9D53b2DdC62D9f0bAbe806647A",
+          address: "0xF7D885543e7cf6c6bCBFF726478ed0C90B0d9df4",
           abi: [
             {
               type: "constructor",
@@ -428,7 +428,7 @@ const contracts = {
           ],
         },
         PrivacyPool: {
-          address: "0xeAd789bd8Ce8b9E94F5D0FCa99F8787c7e758817",
+          address: "0xdCe231Df6213f2aF4e50542dAf26304fF0DD2A7c",
           abi: [
             {
               type: "constructor",

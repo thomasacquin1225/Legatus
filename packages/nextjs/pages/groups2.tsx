@@ -1,16 +1,80 @@
 import Link from "next/link";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import logo from '../public/logo.jpeg';
 import Image from "next/image";
 import type { NextPage } from "next";
+import { useAccount } from "wagmi";
+import { Identity } from "@semaphore-protocol/identity";
+import { Group } from "@semaphore-protocol/group";
+const { generateProof } = require("@semaphore-protocol/proof");
+import axios from "axios";
+
 interface FeedbackModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
 const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
+
+  const { address: connectedAddress } = useAccount();
+  const [identity, setIdentity] = useState<Identity>();
+  const [group, setGroup] = useState<Group>();
   const [feedbackText, setFeedbackText] = useState('');
-  const handleSubmit = () => {
-    console.log('Feedback submitted:', feedbackText);
+
+  useEffect(() => {
+    try {
+      const identity = new Identity(connectedAddress!);
+      setIdentity(identity);
+      const fetchMembers = async () => {
+        try {
+         axios.get(
+            (process.env.NEXT_PUBLIC_SEMAPHORE_API_URL || "http://localhost:3001") + "/group/" +
+            (process.env.NEXT_PUBLIC_GROUP_ID || "1")
+          )
+          .then(response => {
+            const members = response?.data?.members?.map((member: any) => member.id);
+            if (members) {
+              const group = new Group(1, 20, members);
+              setGroup(group);
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+        } catch (error) {
+          throw error;
+        }  
+      }
+      fetchMembers();
+    } catch (error) {
+      console.error("Error creating identity", error);
+    }
+  }, []);
+
+
+  const handleSubmit = async () => {
+    try {
+      const fullProof = await generateProof(
+        identity as Identity, 
+        group as Group, 
+        (group as Group).root, 
+        feedbackText.length
+      );
+      axios.post(
+        (process.env.NEXT_PUBLIC_SEMAPHORE_API_URL ?? "http://localhost:3001") + "/group/" +
+        (process.env.NEXT_PUBLIC_GROUP_ID ?? "1") + "/signal",
+        { 
+          memberId: identity?.commitment?.toString(),
+          signalMsg: feedbackText?.toString(),
+          proof: fullProof?.proof?.toString() || "",
+        }
+      )
+      .catch(error => {
+        console.error(error);
+      });
+    } catch (error) {
+      console.error(error);
+    }
     onClose();
   };
 
@@ -22,7 +86,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
         </div>
         <div className="relative bg-gray-700 rounded-lg max-w-md w-full p-6">
           <div className="mb-4">
-            <label htmlFor="feedback" className="block text font-medium text-white">Your Feedback</label>
+            <label htmlFor="feedback" className="block text font-medium text-white">Enter Message</label>
             <textarea
               id="feedback"
               className="mt-1 text-black block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
@@ -46,15 +110,36 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
     </div>
   );
 };
-const Home: NextPage = () => {
-  const data = [
-    "Semaphore is cool :)",
-    "Hello :)",
-    "testing",
-    "Love semaphore! Hello friends. Good to see you all"
-  ];
 
+const Home: NextPage = () => {
+
+  const [signals, setSignals] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const fetchSignals = async () => {
+        try {
+          axios.get(
+            (process.env.NEXT_PUBLIC_SEMAPHORE_API_URL || "http://localhost:3001") + "/group/" +
+            (process.env.NEXT_PUBLIC_GROUP_ID || "1") + "/signal"
+          )
+          .then(response => {
+            const signals = response?.data.map((signal: any) => signal?.signalMsg);
+            setSignals(signals);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+        } catch (error) {
+          throw error;
+        }  
+      }
+      fetchSignals();
+    } catch (error) {
+      console.error("Error creating identity", error);
+    }
+  }, []);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -135,27 +220,28 @@ const Home: NextPage = () => {
         </aside>
         <div className="ml-44 mt-6">
           <div className="flex justify-center flex-row">
-            <h2 className="text-4xl font-bold dark:text-white">Proofs</h2>
+            <h2 className="text-4xl font-bold dark:text-white">Signals</h2>
           </div>
           <div className="flex justify-center">
             <div className=" mt-4">
               <div className="px-4 py-4 bg-gray-800 mb-4 rounded">
                 <div className="flex flex-col">
-                  <button onClick={openModal} className="btn mb-2">Send Feedback</button>
+                  <button onClick={openModal} className="btn mb-2">Send Message</button>
                   <FeedbackModal isOpen={isModalOpen} onClose={closeModal} />
                   <div className="overflow-x-auto">
                     <table className="table">
                       <thead>
                         <tr>
-                          <th>Feedback signals</th>
+                          <th>Message signals</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {data.map((group, index) => (
+                        {signals?.length === 0 && <tr><td>No signals</td></tr>}
+                        {signals.map((signal, index) => (
                           <tr key={index}>
                             <td>
                               <p className="font-bold font-xl text-lg">
-                                {group}
+                                {signal.toString()}
                               </p>
                             </td>
                           </tr>
@@ -174,7 +260,7 @@ const Home: NextPage = () => {
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                   </svg>
-                  Identities
+                  Identity
                 </span>
               </li>
               <li className="flex md:w-full items-center text-blue-600 dark:text-blue-500 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
@@ -182,7 +268,7 @@ const Home: NextPage = () => {
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                   </svg>
-                  Groups
+                  Group
                 </span>
               </li>
               <li className="flex items-center text-blue-600 dark:text-blue-500 sm:after:content-['']  after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block  xl:after:mx-10 dark:after:border-gray-700">
@@ -190,7 +276,7 @@ const Home: NextPage = () => {
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                   </svg>
-                  Proofs
+                  Signals
                 </span>
               </li>
             </ol>

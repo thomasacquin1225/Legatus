@@ -1,15 +1,67 @@
 import Link from "next/link";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { NextPage } from "next";
 import logo from '../public/logo.jpeg';
 import Image from "next/image";
+import { useAccount } from "wagmi";
+import { Identity } from "@semaphore-protocol/identity";
+import axios from "axios";
+
 const Home: NextPage = () => {
-  const data = [
-    "93433770077998496254123456789",
-    "464186796256987445622123456785",
-    "542455990033442982933246465365",
-    "631247691329682424453536573724"
-  ];
+
+  const { address: connectedAddress } = useAccount();
+  const [identity, setIdentity] = useState<Identity>();
+  const [members, setMembers] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    try {
+      const identity = new Identity(connectedAddress!);
+      setIdentity(identity);
+      const fetchMembers = async () => {
+        try {
+         axios.get(
+            (process.env.NEXT_PUBLIC_SEMAPHORE_API_URL || "http://localhost:3001") + "/group/" +
+            (process.env.NEXT_PUBLIC_GROUP_ID || "1")
+          )
+          .then(response => {
+            const members = response?.data?.members?.map((member: any) => member.id);
+            if (members) {
+              setMembers(members);
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+        } catch (error) {
+          throw error;
+        }  
+      }
+      fetchMembers();
+    } catch (error) {
+      console.error("Error creating identity", error);
+    }
+  }, []);
+
+  const joinGroup = async () => {
+    setLoading(true);
+    try {
+      axios.post(
+        (process.env.NEXT_PUBLIC_SEMAPHORE_API_URL ?? "http://localhost:3001") + "/group/" +
+        (process.env.NEXT_PUBLIC_GROUP_ID ?? "1") + "/member",
+        { memberId: identity?.commitment?.toString() }
+      )
+      .then(response => {
+        setMembers([...members || [], identity?.commitment?.toString() || ""]);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    setLoading(false);
+  };
 
   return (
     <>
@@ -79,26 +131,29 @@ const Home: NextPage = () => {
         </aside>
         <div className="ml-44 mt-6">
           <div className="flex justify-center flex-row">
-            <h2 className="text-4xl font-bold dark:text-white">Groups</h2>
+            <h2 className="text-4xl font-bold dark:text-white">Group</h2>
           </div>
           <div className="flex justify-center">
             <div className=" mt-4">
               <div className="px-4 py-4 bg-gray-800 mb-4 rounded">
                 <div className="flex flex-col">
-                  <button className="btn mb-2">Join Group</button>
+                  {(identity && !members?.includes(identity?.commitment?.toString())) && (
+                    <button className="btn mb-2" onClick={joinGroup}>Join Group</button>
+                  )}
                   <div className="overflow-x-auto ">
                     <table className="table w-full min-w-full">
                       <thead>
                         <tr>
-                          <th>Users</th>
+                          <th>Members</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {data.map((group, index) => (
+                        {members.length === 0 && <tr><td>No members</td></tr>}
+                        {members.map((member, index) => (
                           <tr key={index}>
                             <td>
                               <p className="font-bold font-xl text-lg">
-                                {group}
+                                {member.toString().substring(0, 30)}...
                               </p>
                             </td>
                           </tr>
@@ -117,7 +172,7 @@ const Home: NextPage = () => {
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                   </svg>
-                  Identities
+                  Identity
                 </span>
               </li>
               <li className="flex md:w-full items-center text-blue-600 dark:text-blue-500 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
@@ -125,12 +180,12 @@ const Home: NextPage = () => {
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                   </svg>
-                  Groups
+                  Group
                 </span>
               </li>
               <li className="flex items-center">
                 <span className="me-2">3</span>
-                Proofs
+                Signals
               </li>
             </ol>
           </div>

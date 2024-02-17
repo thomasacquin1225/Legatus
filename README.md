@@ -2,7 +2,7 @@
 Privacy pools based anonymity protocol for DeFi applications
 
 
- ### Contract deployments
+### Contract deployments
 
 **Scroll Sepolia**
 

@@ -1,16 +1,26 @@
 import Link from "next/link";
-import { useState } from 'react';
+import { useState, useEffect, use } from 'react';
 import type { NextPage } from "next";
 import logo from '../public/logo.jpeg';
 import Image from "next/image";
+import { useAccount } from "wagmi";
+import { Identity } from "@semaphore-protocol/identity";
+
 const Home: NextPage = () => {
-  let Trapdoor = 129192558215777110638513793792888210935963329534859087782642362921360649668;
-  let Nullifier = 68855009744356229214731357941433659785201150948822507743904410139511193919;
-  let Commitment = 4533209967181941182345592374773937284832231193099483849438956915823454227006;
+  const { address: connectedAddress } = useAccount();
+  const [identity, setIdentity] = useState<Identity>();
+
+  useEffect(() => {
+    try {
+      const identity = new Identity(connectedAddress!);
+      setIdentity(identity);
+    } catch (error) {
+      console.error("Error creating identity", error);
+    }
+  }, []);
 
   return (
     <>
-
       <div className="flex items-center flex-col flex-grow ">
 
         <aside id="separator-sidebar" className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
@@ -79,22 +89,20 @@ const Home: NextPage = () => {
 
         <div className="ml-44 mt-6">
           <div className="flex justify-center flex-row">
-
-            <h2 className="text-4xl font-bold dark:text-white">Identities</h2>
-
+            <h2 className="text-4xl font-bold dark:text-white">Your Semaphore Identity</h2>
           </div>
           <div className="flex justify-center">
-            <div className=" mt-4">
+            <div className="pt-4 mt-5">
               <div className="px-4 py-4 bg-gray-800 mb-4 rounded">
                 <div className="flex flex-col">
                   <div className="flex">
-                    <h5 className="text-xl font-bold dark:text-white">Trapdoor : {Trapdoor}</h5>
+                    <h5 className="text-xl font-bold dark:text-white">Trapdoor : {identity?.trapdoor?.toString().substring(0, 35)}...</h5>
                   </div>
                   <div className="flex">
-                    <h5 className="text-xl font-bold dark:text-white">Nullifier : {Nullifier} </h5>
+                    <h5 className="text-xl font-bold dark:text-white">Nullifier : {identity?.nullifier?.toString().substring(0, 35)}...</h5>
                   </div>
                   <div className="flex">
-                    <h5 className="text-xl font-bold dark:text-white">Commitment : {Commitment}</h5>
+                    <h5 className="text-xl font-bold dark:text-white">Commitment : {identity?.commitment?.toString().substring(0, 30)}...</h5>
                   </div>
                 </div>
               </div>
@@ -107,18 +115,18 @@ const Home: NextPage = () => {
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                   </svg>
-                  Identities
+                  Identity
                 </span>
               </li>
               <li className="flex md:w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
                 <span className="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
                   <span className="me-2">2</span>
-                  Groups
+                  Group
                 </span>
               </li>
               <li className="flex items-center">
                 <span className="me-2">3</span>
-                Proofs
+                Signals
               </li>
             </ol>
           </div>
