@@ -3,11 +3,29 @@ import {useState} from 'react';
 import type { NextPage } from "next";
 import logo from '../public/logo.jpeg';
 import Image from "next/image";
+import React from "react";
 const Home: NextPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
   const [selectedToken, setSelectedToken] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDepositOpen, setIsDepositOpen] = useState(false);
+
+  let private_note = "934337700779984962541234567899343377007799849625541234567899343377007799849625412345678993433770077412345678993433770077998496254123456789";
+
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleCheckboxChange = (e:any) => {
+    setIsChecked(e.target.checked);
+  };
+
+  const openDeposit = () => { 
+    setIsDepositOpen(true);
+  };
+
+  const closeDeposit = () => {
+    setIsDepositOpen(false);
+  };
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -34,6 +52,7 @@ const Home: NextPage = () => {
   const handleAction = (tab: string) => {
     if(tab === "deposit"){
       console.log("Deposit logic");
+      openDeposit();
     }
     else if(tab === "withdraw"){
       console.log("Withdraw logic");
@@ -448,6 +467,69 @@ const Home: NextPage = () => {
       </div>
     </div>
       )}
+
+      {isDepositOpen && (
+        <div id="default-modal" tabIndex={-1}  className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 bottom-0 left-0 z-50 flex justify-center items-center ">
+          <div className="absolute inset-0 bg-black opacity-80"></div>
+        <div className="relative p-4 w-full max-w-2xl max-h-full">
+        <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <div className="flex items-center justify-between md:p-3 rounded-t">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    Your private note
+                </h3>
+                <button onClick={closeDeposit} type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
+                    <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" strokeLinejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
+            </div>
+             <hr className="h-px bg-gray-200 dark:bg-gray-100"></hr>
+            <div className="px-4 md:p-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text  text-gray-900 dark:text-white">
+                    Please backup your note. You will need it later to withdraw your deposit back.
+                    Treat your note as a private key - never share it with anyone, including Legatus developers.
+                </h3>
+                  <a>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </a>
+                </div>
+                <div className="mr-3">
+                <CopyButton content={private_note}/>
+                </div>
+                <h3 className="text  text-gray-900 dark:text-white">
+                    The browser will ask to save your note as a file.
+                </h3>
+                 <h3 className="text mt-4 text-gray-900 dark:text-white border-2 p-2">
+                    You can also save encrypted notes on-chain by setting up the note account,
+                    Create one on the account page
+                </h3>
+                <div>
+                  <div className="mt-8">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-blue-600"
+                      checked={isChecked}
+                      onChange={handleCheckboxChange}
+                    />
+                    <span className="ml-2 text-white">I backed up the note. </span>
+                  </label>
+                </div>
+                  <button
+                    className={`mt-4 px-4 py-2 btn w-full ${isChecked ? '' : 'opacity-50 cursor-not-allowed'}`}
+                    disabled={!isChecked}
+                  >
+                    Deposit
+                  </button>
+              </div>
+            </div>
+
+        </div>
+      </div>
+    </div>
+      )}
+
     </div>
     </div>
     <div className="fixed bottom-8 right-0 mb-4 mr-4">
@@ -463,10 +545,106 @@ const Home: NextPage = () => {
         <div className="chat-bubble">Need any help?</div>
       </div>
     </div>
-
-    
       </div>
     </>
+  );
+};
+
+interface ClipboardProps {
+  duration?: number;
+}
+
+
+const useClipboard = (props: ClipboardProps) => {
+  const [copied, setCopied] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+  const resetCopy = React.useRef<NodeJS.Timeout | null>(null);
+
+  const onCopy = React.useCallback(() => {
+    if (ref.current) {
+      navigator.clipboard
+        .writeText(ref.current.innerText)
+        .then(() => setCopied(true));
+    }
+  }, [ref]);
+
+  React.useEffect(() => {
+    if (copied) {
+      resetCopy.current = setTimeout(
+        () => setCopied(false),
+        props?.duration || 3000,
+      );
+    }
+
+    return () => {
+      if (resetCopy.current) {
+        clearTimeout(resetCopy.current);
+      }
+    };
+  }, [copied, props.duration]);
+
+  return { copied, ref, onCopy };
+};
+
+interface CopyButtonProps {
+  content: string;
+}
+const CopyButton: React.FC<CopyButtonProps> = ({ content }) => {
+  const { copied, ref, onCopy } = useClipboard({ duration: 4000 });
+
+  return (
+    <div className="">
+    <div className="flex flex-row ">
+      <div ref={ref} className="w-full md:w-98">
+        <blockquote className=" bg-gray-100 rounded dark:bg-gray-800">
+            <p className="text italic leading-relaxed text-gray-900 whitespace-normal break-words dark:text-white">{content}</p>
+        </blockquote>
+      </div>
+      <button className="" onClick={onCopy}>
+        {copied ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
+            />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"
+            />
+          </svg>
+        )}
+      </button>
+    </div>
+    <div className="mb-2">
+      {copied ? 
+      <>
+      <kbd className="kbd">CMD ⌘</kbd> 
+      +
+      <kbd className="kbd">V</kbd>
+      </>
+      :
+      <></>}
+      </div>
+    </div>
   );
 };
 
