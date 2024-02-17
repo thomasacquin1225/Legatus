@@ -170,7 +170,7 @@ app.get('/deposits', async (req, res) => {
     }
 });
 
-app.get('/deposits/:commitment', async (req, res) => {
+app.get('/deposit/:commitment', async (req, res) => {
     try {
         const { commitment } = req.params;
         const { data: deposit, error } = await supabase.from('deposits').select('*').eq('commitment', commitment);
