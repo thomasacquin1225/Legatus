@@ -68,11 +68,14 @@ async function startup() {
                 const tx1 = await (asp as any).connect(wallet).publishMerkleRoot(merkleTree.getRoot() as BytesLike);
                 await tx1.wait();
                 console.log('Published new merkle root on-chain:', merkleTree.getRoot());
-                const tx2 = await (asp as any).connect(wallet).publishSubMerkleRoot(
-                    merkleTree.getRoot() as BytesLike, subMerkleTree.getRoot() as BytesLike
-                );
-                await tx2.wait();
-                console.log('Published new sub merkle root on-chain:', subMerkleTree.getRoot());
+                
+                setTimeout(async () => {
+                    const tx2 = await (asp as any).connect(wallet).publishSubMerkleRoot(
+                        merkleTree.getRoot() as BytesLike, subMerkleTree.getRoot() as BytesLike
+                    );
+                    await tx2.wait();
+                    console.log('Published new sub merkle root on-chain:', subMerkleTree.getRoot());
+                }, 10000);
 
                 const { data, error } = await supabase.from('deposits').insert([
                     { depositor: depositor.toLowerCase(), tx_hash, asset, amount: parseFloat(ethers.formatEther(amount)), commitment }

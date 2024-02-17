@@ -1,34 +1,148 @@
 import Link from "next/link";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { NextPage } from "next";
 import logo from '../public/logo.jpeg';
 import Image from "next/image";
 import React from "react";
 import HashLoader from "react-spinners/HashLoader";
+import axios from "axios";
+import { ethers } from 'ethers';
+import { parseEther } from "viem";
+import { useAccount } from "wagmi";
+import { Balance } from "~~/components/scaffold-eth";
+import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+const { buildPoseidonOpt } = require('circomlibjs');
+
+interface IHashPaths {
+  tree: {
+    root: string;
+    index: number;
+    hashPath: string[];
+  };
+  subTree: {
+    root: string;
+    index: number;
+    hashPath: string[];
+  };
+}
 
 const Home: NextPage = () => {
+  const { address: connectedAddress } = useAccount();
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  let [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
   const [selectedToken, setSelectedToken] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDepositOpen, setIsDepositOpen] = useState(false);
-
-  let private_note = "934337700779984962541234567899343377007799849625541234567899343377007799849625412345678993433770077412345678993433770077998496254123456789";
-
+  const [depositAmount, setDepositAmount] = useState(0);
+  const [withdrawAmount, setWithdrawAmount] = useState(0);
+  const [loadingText, setLoadingText] = useState("");
+  const [privateNote, setPrivateNote] = useState<string>("0x");
+  const [commitmentNote, setCommitmentNote] = useState<string>("0x");
+  const [merkleRoot, setMerkleRoot] = useState<string>("0x");
+  const [subMerkleRoot, setSubMerkleRoot] = useState<string>("0x");
   const [isChecked, setIsChecked] = useState(false);
+
+  const { writeAsync: depositTx, isLoading: depositLoading, isMining: depositMining } = useScaffoldContractWrite({
+    contractName: "PrivacyPool",
+    functionName: "deposit",  
+    args: [
+      "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      parseEther(depositAmount.toString()),
+      privateNote?.slice(0, 66) as `0x${string}`,
+    ],
+    value: depositAmount.toString() as `${number}`,
+    blockConfirmations: 1,
+    onBlockConfirmation: txnReceipt => {
+      console.log("Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
+
+  const { writeAsync: withdrawTx, isLoading: withdrawLoading, isMining: withdrawMining } = useScaffoldContractWrite({
+    contractName: "PrivacyPool",
+    functionName: "withdraw",
+    args: [
+      "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      connectedAddress,
+      parseEther(withdrawAmount.toString()),
+      '0x',
+      '0x',
+      subMerkleRoot as `0x${string}`,
+      '0x',
+      '0x',
+    ],
+    blockConfirmations: 1,
+    onBlockConfirmation: txnReceipt => {
+      console.log("Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleCheckboxChange = (e: any) => {
     setIsChecked(e.target.checked);
   };
 
-  const actualDeposit = () => {
+  const actualDeposit = async () => {
     setLoading(true);
+    try {
+      setLoadingText("Submitting deposit transaction...");
+      await depositTx();
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
     closeDeposit();
   };
 
-  const actualWithdraw = () => {
+  const actualWithdraw = async () => {
     setLoading(true);
+    try {
+      if (commitmentNote?.length !== 194) {
+        throw new Error('Invalid note length');
+      }
+      const commitment = commitmentNote?.slice(0, 66);
+      const secretHash = '0x'+commitmentNote?.slice(66, 130);
+      const nullifierHash = '0x'+commitmentNote?.slice(130, 194);
+      const hashPaths = await getHashPath(commitment);
+      setLoadingText("Generating merkle proof...");
+      const proof1 = await generateProof(
+        secretHash, 
+        nullifierHash, 
+        commitment, 
+        hashPaths?.tree?.root, 
+        hashPaths?.tree?.hashPath, 
+        hashPaths?.tree?.index?.toString()
+      );
+      setLoadingText("Generating subtree merkle proof...");
+      const proof2 = await generateProof(
+        secretHash, 
+        nullifierHash, 
+        commitment, 
+        hashPaths?.subTree?.root, 
+        hashPaths?.subTree?.hashPath, 
+        hashPaths?.subTree?.index?.toString()
+      );
+      setLoadingText("Submitting withdraw transaction...");
+      await withdrawTx({
+        args: [
+          "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+          connectedAddress,
+          parseEther(withdrawAmount.toString()),
+          nullifierHash as `0x${string}`,
+          hashPaths?.tree?.root as `0x${string}`,
+          hashPaths?.subTree?.root as `0x${string}`,
+          proof1 as `0x${string}`,
+          proof2 as `0x${string}`,
+        ],
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
   };
 
   const openDeposit = () => {
@@ -61,16 +175,107 @@ const Home: NextPage = () => {
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
-  const handleAction = (tab: string) => {
+  const handleAction = async (tab: string) => {
     if (tab === "deposit") {
-      console.log("Deposit logic");
+      await generateCommitment();
       openDeposit();
     }
     else if (tab === "withdraw") {
-      console.log("Withdraw logic");
-      actualWithdraw();
+      await actualWithdraw();
     }
   }
+
+  const poseidonHash = async (data: any[]) => {
+    const poseidon = await buildPoseidonOpt();
+    const posHash = poseidon(data);
+    const hash = poseidon.F.toString(posHash);
+    let hexString = ethers.toBigInt(hash).toString(16);
+    while (hexString.length < 64) {
+        hexString = '0' + hexString;
+    }
+    return '0x'+hexString;
+  }
+
+  const generateCommitment = async () => {
+    try {
+      const range = 9007199254740990;
+      const secret = BigInt(Math.floor(Math.random() * range));
+      const nullifier = secret + BigInt(1);
+      const secretHash = await poseidonHash([secret.toString()]);
+      const nullifierHash = await poseidonHash([nullifier.toString()]);
+      const commitment = await poseidonHash([secretHash, nullifierHash]);
+      const note = commitment + secretHash.slice(2) + nullifierHash.slice(2);
+      setPrivateNote(note);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const getHashPath = async (commitment: string): Promise<IHashPaths> => {
+    try {
+      const response = await axios.get(
+        (process.env.NEXT_PUBLIC_ASP_API_URL || "http://localhost:3002") + "/hash-path/" + commitment
+      );
+      const hashPaths: IHashPaths = response?.data;
+      return hashPaths;
+    } catch (error) {
+      console.log(error);
+      return {} as IHashPaths;
+    }
+  }
+
+  const generateProof = async (secret: string, nullifier: string, leaf: string, root: string, hashPath: string[], index: string) => {
+    try {
+      const sindriApi = axios.create({
+          baseURL: process.env.NEXT_PUBLIC_SINDRI_API_URL || "https://sindri.app/api/v1",
+          headers: {
+            "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SINDRI_API_KEY || "API-KEY"}`
+          },
+          validateStatus: (status) => status >= 200 && status < 300
+      });
+      const hash_path = [...hashPath, ...Array(Math.max(0, 10 - hashPath.length)).fill('0')];
+      const hashPathString = hash_path.map(value => `"${value}"`).join(",");
+
+      const data = `
+          hash_path=[${hashPathString}]
+          index="${index}"
+          leaf="${leaf}"
+          nullifier="${nullifier}"
+          root="${root}"
+          secret="${secret}"
+      `;
+      
+      const proofInput = data;
+      const circuitId = process.env.NEXT_PUBLIC_SINDRI_CIRCUIT_ID || "5defe5f6-7eb5-47e7-a59b-07f3beb97754";
+      const proveResponse = await sindriApi.post(`/circuit/${circuitId}/prove`, {
+          proof_input: proofInput,
+      });
+      const proofId = proveResponse.data.proof_id;
+
+      let startTime = Date.now();
+      let proofDetailResponse;
+      while (true) {
+          proofDetailResponse = await sindriApi.get(`/proof/${proofId}/detail`);
+          const { status } = proofDetailResponse.data;
+          const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
+          if (status === "Ready") {
+              break;
+          } else if (status === "Failed") {
+              throw new Error(
+                  `Polling failed after ${elapsedSeconds} seconds: ${proofDetailResponse.data.error}.`,
+              );
+          } else if (Date.now() - startTime > 30 * 60 * 1000) {
+              throw new Error("Timed out after 30 minutes.");
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+      return '0x'+proofDetailResponse?.data?.proof?.proof;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  if (!mounted) return <></>;
   return (
     <>
 
@@ -168,7 +373,9 @@ const Home: NextPage = () => {
                     </div>
                     <form className="pt-4">
                       <div className="relative px-2 flex">
-                        <input type="text" placeholder="Enter amount" className="input text-xl font-bold input-ghost w-2/3 text-bold" />
+                        <input type="text" placeholder="Enter amount" className="input text-xl font-bold input-ghost w-2/3 text-bold" 
+                          onChange={(e) => setDepositAmount(parseFloat(e.target.value))} 
+                        />
                         <div>
                           <button
                             id="dropdownHoverButton"
@@ -191,12 +398,6 @@ const Home: NextPage = () => {
                                     src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
                                     alt="UNIswap Logo"
                                   />
-                                  : selectedToken === "BTC" ?
-                                    <img
-                                      className="w-6 h-6 ml-4 "
-                                      src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=029"
-                                      alt="Bitcoin Logo"
-                                    />
                                     : selectedToken === "UNI" ?
                                       <img
                                         className="w-6 h-6 ml-4 "
@@ -224,18 +425,15 @@ const Home: NextPage = () => {
                                 <li>
                                   <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("WBTC")}>WBTC</a>
                                 </li>
-                                <li>
-                                  <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("BTC")}>BTC</a>
-                                </li>
                               </ul>
                             </div>
                           )}
                         </div>
                       </div>
                       <div className="flex-row">
-                        <div className="flex justify-end items-end mt-4 mr-2 ">
+                        <div className="flex justify-end items-end mt-4">
                           <div className="flex">
-                            <p className="justify-end font-bold text-white pt-3 mr-2">Balance : 0.206</p>
+                          <p className="font-bold text-white pt-3"><Balance address={connectedAddress} /></p>
                           </div>
                         </div>
                       </div>
@@ -257,7 +455,9 @@ const Home: NextPage = () => {
                     <form className="pt-4">
                       <div className="relative px-2">
                         <div className="relative px-2 flex">
-                          <input type="text" placeholder="Enter amount" className="input text-xl input-ghost w-2/3 text-bold text-lg font-bold" />
+                          <input type="text" placeholder="Enter amount" className="input text-xl input-ghost w-2/3 text-bold text-lg font-bold"
+                            onChange={(e) => setWithdrawAmount(parseFloat(e.target.value))} 
+                          />
                           <div>
                             <button
                               id="dropdownHoverButton"
@@ -280,12 +480,6 @@ const Home: NextPage = () => {
                                       src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
                                       alt="UNIswap Logo"
                                     />
-                                    : selectedToken === "BTC" ?
-                                      <img
-                                        className="w-6 h-6 ml-4 "
-                                        src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=029"
-                                        alt="Bitcoin Logo"
-                                      />
                                       : selectedToken === "UNI" ?
                                         <img
                                           className="w-6 h-6 ml-4 "
@@ -314,9 +508,6 @@ const Home: NextPage = () => {
                                   <li>
                                     <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("WBTC")}>WBTC</a>
                                   </li>
-                                  <li>
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("BTC")}>BTC</a>
-                                  </li>
                                 </ul>
                               </div>
                             )}
@@ -326,20 +517,23 @@ const Home: NextPage = () => {
                       <div className="mb-6 mt-3">
                         <label className="ml-2 block mb- text-sm font-medium text-gray-900 dark:text-white">Commitment note</label>
                         <div className="ml-2 mr-2">
-                          <input type="text" id="large-input" placeholder="Commitment note" className="block w-full p-6 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500" />
+                          <input type="text" id="large-input" placeholder="Commitment note" className="block w-full p-6 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500" 
+                            onChange={(e) => setCommitmentNote(e.target.value)}
+                          />
                         </div>
                       </div>
 
                       <div >
                         <label className="ml-2 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Merkle tree root</label>
                         <div className="ml-2 mr-2">
-                          <input type="text" id="default-input" placeholder="Sub Merkle tree root" className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500" />
+                          <input type="text" id="default-input" placeholder="Sub Merkle tree root" className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500" 
+                            onChange={(e) => setSubMerkleRoot(e.target.value)}
+                          />
                         </div>
                       </div>
                       <div className="flex-row">
                         <div className="flex justify-end items-end mt-1 mr-2 ">
                           <div className="flex">
-                            <p className="justify-end font-bold text-white pt-3 ">Balance : 0.206</p>
                             <button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-full text-sm px-3 py-2  mb-2 ml-4 mt-2 dark:bg-gray-800 dark:text-white text-bold dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Max</button>
                           </div>
                         </div>
@@ -350,12 +544,12 @@ const Home: NextPage = () => {
 
             </div>
           </div>
-          <div className={` flex flex-col fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-70 z-50 ${loading ? '' : 'hidden'}`}>
-            <p className="text-xl font-bold">Withdraw text goes here</p>
+          <div className={` flex flex-col fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-70 z-50 ${(loading || depositLoading || withdrawLoading) ? '' : 'hidden'}`}>
+            <p className="text-xl font-bold">{loadingText}</p>
             <HashLoader
               color="#ffffff"
               size="100px"
-              loading={loading} />
+              loading={loading || depositLoading || withdrawLoading} />
           </div>
           <div className="mt-4 rounded">
             <button className="btn w-full" onClick={() => selectedToken ? handleAction(activeTab) : openModal()}>
@@ -455,18 +649,7 @@ const Home: NextPage = () => {
                               Ethereum
                               <span className="text-sm text-gray-400">ETH</span>
                             </div>
-                          </button>
-                          <button onClick={() => { handleTokenSelect("BTC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium rounded-b-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
-                            <img
-                              className="w-6 h-6 me-2.5 "
-                              src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=029"
-                              alt="Bitcoin Logo"
-                            />
-                            <div className="flex flex-col justify-start items-start">
-                              Bitcoin
-                              <span className="text-sm text-gray-400">BTC</span>
-                            </div>
-                          </button>
+                          </button>                      
                         </div>
                       </div>
                     </div>
@@ -483,7 +666,7 @@ const Home: NextPage = () => {
                   <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
                     <div className="flex items-center justify-between md:p-3 rounded-t">
                       <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        Your private note
+                        Private Note
                       </h3>
                       <button onClick={closeDeposit} type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
                         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -503,15 +686,8 @@ const Home: NextPage = () => {
                         </a>
                       </div>
                       <div className="mr-3">
-                        <CopyButton content={private_note} />
+                        <CopyButton content={privateNote} />
                       </div>
-                      <h3 className="text  text-gray-900 dark:text-white">
-                        The browser will ask to save your note as a file.
-                      </h3>
-                      <h3 className="text mt-4 text-gray-900 dark:text-white border-2 p-2">
-                        You can also save encrypted notes on-chain by setting up the note account,
-                        Create one on the account page
-                      </h3>
                       <div>
                         <div className="mt-8">
                           <label className="inline-flex items-center">

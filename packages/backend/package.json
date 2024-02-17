@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "scripts": {
         "start:backend": "nodemon",
-        "start:asp": "ts-node asp.ts"
+        "start:asp": "nodemon --exec ts-node asp.ts"
     },
     "dependencies": {
         "@openzeppelin/merkle-tree": "^1.0.6",

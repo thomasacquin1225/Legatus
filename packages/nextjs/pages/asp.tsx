@@ -32,18 +32,18 @@ const Home: NextPage = () => {
             .catch(error => {
               console.error(error);
             });
-            axios.get(
-              (process.env.NEXT_PUBLIC_ASP_API_URL || "http://localhost:3002") + "/deposits/sub-tree"
-            )
-              .then(response => {
-                const deposits = response?.data?.deposits;
-                if (deposits) {
-                  setDeposits(deposits);
-                }
-              })
-              .catch(error => {
-                console.error(error);
-              });
+          axios.get(
+            (process.env.NEXT_PUBLIC_ASP_API_URL || "http://localhost:3002") + "/deposits/sub-tree"
+          )
+            .then(response => {
+              const deposits = response?.data?.deposits;
+              if (deposits) {
+                setDeposits(deposits);
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
         } catch (error) {
           throw error;
         }
@@ -133,7 +133,7 @@ const Home: NextPage = () => {
               </h4>
               <CopyButton content={merkleTreeRoot} />
               <h4 className="text-2xl font-normal leading-normal mb-2 text-blueGray-800">
-                Subset merkle root
+                Subset tree merkle root
               </h4>
               <CopyButton content={subsetMerkleRoot} />
             </div>  
@@ -155,10 +155,10 @@ const Home: NextPage = () => {
                     index % 3 === 0 && (
                       <tr key={index / 3}>
                         <th>{index / 3 + 1}</th>
-                        <td key={index + 0}>{deposit?.depositor?.toString()}</td>
-                        <td key={index + 1}>{deposit?.commitment?.toString()}</td>
+                        <td key={index + 0}>{deposit?.depositor?.toString().substring(0,25)}...</td>
+                        <td key={index + 1}>{deposit?.commitment?.toString().substring(0,30)}...</td>
                         <a href={`https://sepolia.scrollscan.dev/tx/${deposit?.tx_hash?.toString()}`} target="_blank" rel="noreferrer noopener">
-                          <td key={index + 2}>{deposit?.tx_hash?.toString()}</td>
+                          <td key={index + 2}>{deposit?.tx_hash?.toString().substring(0,32)}...</td>
                         </a>
                       </tr>
                     )

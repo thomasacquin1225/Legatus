@@ -40,7 +40,7 @@ export const Header = () => {
         <NavLink href="/">Home</NavLink>
       </li>
       <li>
-        <NavLink href="/blockexplorer">
+        <NavLink href="https://sepolia.scrollscan.dev/address/0xdCe231Df6213f2aF4e50542dAf26304fF0DD2A7c">
           <MagnifyingGlassIcon className="h-4 w-4" />
           Block Explorer
         </NavLink>
