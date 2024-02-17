@@ -18,14 +18,32 @@ const supabase = createClient(process.env.SUPABASE_URL as string, process.env.SU
 app.use(cors());
 app.use(express.json());
 
-const provider = new ethers.JsonRpcProvider(process.env.RPC_URL || 'http://127.0.0.1:8545');
-const wallet = new ethers.Wallet(process.env.PRIVATE_KEY || '0x', provider);
-const privacyPool = new ethers.Contract(process.env.PRIVACY_POOL_CONTRACT || '0x', PrivacyPool.abi, provider);
-const asp = new ethers.Contract(process.env.ASP_CONTRACT || '0x', ASP.abi, provider);
+let provider = new ethers.JsonRpcProvider(process.env.RPC_URL || 'http://127.0.0.1:8545');
+let wallet = new ethers.Wallet(process.env.PRIVATE_KEY || '0x', provider);
+let privacyPool = new ethers.Contract(process.env.PRIVACY_POOL_CONTRACT || '0x', PrivacyPool.abi, provider);
+let asp = new ethers.Contract(process.env.ASP_CONTRACT || '0x', ASP.abi, provider);
 
 let poseidon: any;
 let merkleTree: PoseidonMerkleTree;
 let subMerkleTree: PoseidonMerkleTree;
+
+function reconnectProvider() {
+    let interval = setInterval(() => {
+        provider = new ethers.JsonRpcProvider(process.env.RPC_URL || 'http://127.0.0.1:8545');
+        wallet = new ethers.Wallet(process.env.PRIVATE_KEY || '0x', provider);
+        privacyPool = new ethers.Contract(process.env.PRIVACY_POOL_CONTRACT || '0x', PrivacyPool.abi, provider);
+        asp = new ethers.Contract(process.env.ASP_CONTRACT || '0x', ASP.abi, provider);
+        provider.getBlockNumber()
+            .then(() => {
+                console.log('Successfully reconnected to RPC');
+                startup();
+                clearInterval(interval);
+            })
+            .catch(err => {
+                console.log('Error while trying to reconnect:', err);
+            });
+    }, 5000);
+}
 
 async function startup() {
     try {
