@@ -1,6 +1,50 @@
 # Legatus
 Privacy pools based anonymity protocol for DeFi applications
 
+## Running the project in local environment
+
+#### Clone the repository
+
+```bash
+git clone https://github.com/thomasacquin1225/Legatus.git
+```
+
+#### Install dependencies
+
+```bash
+cd Legatus
+yarn
+```
+
+#### Setup environment variables
+
+Create `.env` files in the workspaces and fill in the required environment variables based on the `.env.example` files.
+
+
+#### Run Anvil fork
+
+```bash
+yarn fork
+```
+
+#### Start Semaphore API server
+
+```bash
+yarn start:backend
+```
+
+#### Start Association Set Provider (ASP) server
+
+```bash
+yarn start:asp
+```
+
+#### Start Next.js frontend
+
+```bash
+yarn start
+```
+
 
 ### Contract deployments
 
