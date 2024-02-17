@@ -4,7 +4,7 @@ export const dataSource = new DataSource({
   "type": "sqlite",
   "database": "./groups.db",
   "synchronize": true,
-  "logging": true,
+  "logging": false,
   "entities": [
     "groups/**/*.ts"
   ],

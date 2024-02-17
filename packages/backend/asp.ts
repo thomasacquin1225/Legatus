@@ -41,10 +41,21 @@ async function startup() {
         if (error2) {
             throw(error2);
         }
+
         if (deposits && deposits?.length > 0) {
             merkleTree.buildMerkleTree(deposits.map((d: any) => d.commitment));
-            const excludedCommitments = deposits.filter((d: any) => excludedDepositors.includes(d.depositor)).map((d: any) => d.commitment);
-            subMerkleTree.buildMerkleTree(deposits.map((d: any) => d.commitment).filter((c: string) => !excludedCommitments.includes(c)));
+            if (excludedDepositors && excludedDepositors?.length > 0) {
+                console.log('Excluded', excludedDepositors.map((d: any) => d?.depositor).length, 'suspicious depositor(s)');
+                const excludedDepositorsList = excludedDepositors.map((d: any) => d?.depositor.toLowerCase());
+                const excludedCommitments = deposits.filter((d: any) => excludedDepositorsList.includes(d?.depositor?.toLowerCase()))
+                                                .map((d: any) => d.commitment);
+                const filteredCommitments = deposits.map((d: any) => d.commitment).filter((c: string) => !excludedCommitments.includes(c));
+                if (filteredCommitments.length > 0) {
+                    subMerkleTree.buildMerkleTree(filteredCommitments);
+                }
+            } else {
+                subMerkleTree.buildMerkleTree(deposits.map((d: any) => d.commitment));
+            }
         }
         
         privacyPool.addListener('Deposit', async (depositor: string, asset: string, amount: bigint, commitment: string, event: any) => {
@@ -64,7 +75,7 @@ async function startup() {
                 console.log('Published new sub merkle root on-chain:', subMerkleTree.getRoot());
 
                 const { data, error } = await supabase.from('deposits').insert([
-                    { depositor, tx_hash, asset, amount: parseFloat(ethers.formatEther(amount)), commitment }
+                    { depositor: depositor.toLowerCase(), tx_hash, asset, amount: parseFloat(ethers.formatEther(amount)), commitment }
                 ]);
                 if (error) {
                     throw(error);
@@ -194,8 +205,37 @@ app.get('/excluded-depositors', async (req, res) => {
         if (error) {
             throw(error);
         }
-        const excludedDepositors = depositors.map((d: any) => d.address);
+        const excludedDepositors = depositors.map((d: any) => d.depositor);
         res.status(200).json({ depositors: excludedDepositors });
+    } catch (e) {
+        res.status(500).json({ error: e });
+    }
+});
+
+app.post('/add-deposit', async (req, res) => {
+    try {
+        const { depositor, tx_hash, asset, amount, commitment, publish } = req.body;
+        if (publish === true) {
+            merkleTree.insert(commitment);
+            subMerkleTree.insert(commitment);
+            console.log('Inserted new commitment:', commitment);
+
+            const tx1 = await (asp as any).connect(wallet).publishMerkleRoot(merkleTree.getRoot() as BytesLike);
+            await tx1.wait();
+            console.log('Published new merkle root on-chain:', merkleTree.getRoot());
+            const tx2 = await (asp as any).connect(wallet).publishSubMerkleRoot(
+                merkleTree.getRoot() as BytesLike, subMerkleTree.getRoot() as BytesLike
+            );
+            await tx2.wait();
+            console.log('Published new sub merkle root on-chain:', subMerkleTree.getRoot());
+        }
+        const { data, error } = await supabase.from('deposits').insert([
+            { depositor: depositor.toLowerCase(), tx_hash, asset, amount, commitment }
+        ]);
+        if (error) {
+            throw(error);
+        }
+        res.status(200).json({ message: 'Deposit added' });
     } catch (e) {
         res.status(500).json({ error: e });
     }
@@ -204,7 +244,7 @@ app.get('/excluded-depositors', async (req, res) => {
 app.post('/exclude-depositor', async (req, res) => {
     try {
         const { depositor } = req.body;
-        const { data: deposits, error } = await supabase.from('deposits').select('*').eq('depositor', depositor);
+        const { data: deposits, error } = await supabase.from('deposits').select('*').eq('depositor', depositor.toLowerCase());
         if (error) {
             throw(error);
         }
@@ -218,7 +258,7 @@ app.post('/exclude-depositor', async (req, res) => {
                 merkleTree.getRoot() as BytesLike, subMerkleTree.getRoot() as BytesLike
             );
             await tx.wait();
-            const { data, error } = await supabase.from('excluded-depositors').insert([{ address: depositor }]);
+            const { data, error } = await supabase.from('excluded-depositors').insert([{ depositor: depositor.toLowerCase() }]);
             if (error) {
                 throw(error);
             }
