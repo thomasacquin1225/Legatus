@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany } from "typeorm";
 import { Member } from "./member";
+import { Signal } from "./signal";
 
 @Entity()
 export class Group {
@@ -16,4 +17,7 @@ export class Group {
     @ManyToMany(() => Member, (member) => member.id)
     @JoinTable()
     members: Member[];
+
+    @OneToMany(() => Signal, (signal) => signal.group)
+    signals: Signal[];
 }

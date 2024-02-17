@@ -5,6 +5,7 @@ import { GroupService } from "./groups/group.service";
 import { Group } from "./groups/group";
 import { Member } from "./groups/member";
 import { GroupController } from "./groups/group.controller";
+import { Signal } from './groups/signal';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -15,7 +16,8 @@ app.use(express.json());
 
 const groupRepository = dataSource.getRepository(Group)
 const memberRepository = dataSource.getRepository(Member)
-const groupService = new GroupService(groupRepository, memberRepository);
+const signalRepository = dataSource.getRepository(Signal)
+const groupService = new GroupService(groupRepository, memberRepository, signalRepository);
 const groupController = new GroupController(groupService);
 app.use("/group", groupController.router);
 

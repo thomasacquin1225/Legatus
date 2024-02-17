@@ -12,6 +12,8 @@ export class GroupController {
         this.router.get("/:id/fingerprint", this.getGroupFingerprint);
         this.router.post("/:id/member", this.addMember);
         this.router.delete("/:id/member", this.removeMember);
+        this.router.post("/:id/signal", this.createSignal);
+        this.router.get("/:id/signal", this.getAllSignals);
         console.log("Router setup complete");
     }
 
@@ -63,6 +65,29 @@ export class GroupController {
             const memberId: string = req.body.memberId;
             await this.groupService.removeMember(id, memberId);
             res.status(200).json({success: true});
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    getAllSignals = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const id = parseInt(req.params.id);
+            const signals = await this.groupService.getAllSignals(id);
+            res.status(200).json(signals);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    createSignal = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const id = parseInt(req.params.id);
+            const memberId = req.body.memberId;
+            const signalMsg = req.body.signalMsg;
+            const proof = req.body.proof;
+            const signal = await this.groupService.createSignal(id, memberId, signalMsg,proof);
+            res.status(200).json(signal);
         } catch (err) {
             next(err);
         }

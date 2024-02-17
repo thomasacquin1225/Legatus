@@ -2,13 +2,15 @@ import { Repository } from "typeorm";
 import { Group } from "./group";
 import { Group  as CachedGroup } from "@semaphore-protocol/group";
 import { Member } from "./member";
+import { Signal } from "./signal";
 
 export class GroupService {
     private cachedGroups: Map<number, CachedGroup>;
 
     constructor(
         private groupRepository: Repository<Group>,
-        private memberRepository: Repository<Member>
+        private memberRepository: Repository<Member>,
+        private signalRepository: Repository<Signal>
     ) {
         this.cachedGroups = new Map();
     }
@@ -23,7 +25,12 @@ export class GroupService {
         console.log("Semaphore Groups Loaded");
     }
 
-    async createMember(memberId: string) {
+    async getMember(memberId: string) {
+        try {
+            BigInt(memberId);
+        } catch (_) {
+            throw new Error("Member ID must be a bigint");
+        }
         let member = await this.memberRepository.findOne({
             where: {
                 id: memberId
@@ -39,7 +46,7 @@ export class GroupService {
         if (treeDepth < 16 || treeDepth > 32) {
             throw new Error("The tree depth must be between 16 and 32");
         }
-        const members = await Promise.all(memberIds.map(async (memberId) => await this.createMember(memberId)));
+        const members = await Promise.all(memberIds.map(async (memberId) => await this.getMember(memberId)));
         const newGroup = new Group(treeDepth, members);
         const savedGroup = await this.groupRepository.save(newGroup);
         const id = savedGroup.id;
@@ -64,7 +71,7 @@ export class GroupService {
         if (group.members.find((m) => m.id == memberId)) {
             throw new Error("Member already exists");
         }
-        const member = await this.createMember(memberId);
+        const member = await this.getMember(memberId);
         group.members.push(member);
         await this.groupRepository.save(group);
         const cachedGroup = this.cachedGroups.get(groupId);
@@ -88,4 +95,31 @@ export class GroupService {
         const cachedGroup = this.cachedGroups.get(groupId)!;
         return cachedGroup?.root.toString();
     }
+
+    async createSignal(groupId: number, memberId: string, signalMsg: string, proof: string) {
+        const group = await this.getGroup(groupId);
+        const member = group.members.find((m) => m.id === memberId);
+        if (!member) {
+            throw new Error("Member not found");
+        }
+        const signal = new Signal();
+        signal.proof = proof;
+        signal.signalMsg = signalMsg;
+        signal.group = group;
+        signal.member = member;
+        const savedSignal = this.signalRepository.save(signal)
+        return savedSignal;
+    }
+
+    async getAllSignals(groupId: number) {
+        const signals = await this.signalRepository.find({
+            where: { group: {id: groupId} },
+            relations: { member: true, group: true}
+        });
+        if (signals.length === 0) {
+            throw new Error("No signals found");
+        }
+        return signals;
+    }
+
 }
