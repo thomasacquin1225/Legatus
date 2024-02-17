@@ -1,17 +1,58 @@
 import Link from "next/link";
-import React from 'react';
+import React, { useState, useEffect, use } from 'react';
 import type { NextPage } from "next";
 import logo from '../public/logo.jpeg';
 import Image from "next/image";
+import axios from "axios";
+interface Deposit {
+  depositor: string;
+  commitment: string;
+  tx_hash: string;
+}
 const Home: NextPage = () => {
-  let merkle_tree_root = "merkle_tree_root";
-  let subset_merkle_root = "subset_merkle_root";
-  const data = [
-    "101112", "131415", "161718",
-    "192021", "222324", "252627",
-    "282930", "313233", "343536",
-    "373839", "404142", "434445"
-  ];
+  const [merkleTreeRoot, setMerkleTreeRoot] = useState<string>("Unavailable");
+  const [subsetMerkleRoot, setSubsetMerkleRoot] = useState<string>("Unavailable");
+  const [deposits, setDeposits] = useState<Deposit[]>([]);
+
+  useEffect(() => {
+    try {
+      const fetchData = async () => {
+        try {
+          axios.get(
+            (process.env.NEXT_PUBLIC_ASP_API_URL || "http://localhost:3002") + "/merkle-roots"
+          )
+            .then(response => {
+              const merkleRoot = response?.data?.root;
+              const subsetRoot = response?.data?.subRoot;
+              if (merkleRoot && subsetRoot) {
+                setMerkleTreeRoot(merkleRoot);
+                setSubsetMerkleRoot(subsetRoot);
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
+            axios.get(
+              (process.env.NEXT_PUBLIC_ASP_API_URL || "http://localhost:3002") + "/deposits/sub-tree"
+            )
+              .then(response => {
+                const deposits = response?.data?.deposits;
+                if (deposits) {
+                  setDeposits(deposits);
+                }
+              })
+              .catch(error => {
+                console.error(error);
+              });
+        } catch (error) {
+          throw error;
+        }
+      };
+      fetchData();
+    } catch (error) {
+      console.error("Error fetching data", error);
+    }
+  }, [subsetMerkleRoot, merkleTreeRoot]);
 
 
   return (
@@ -86,18 +127,16 @@ const Home: NextPage = () => {
 
         <div className="mr-40 ml-40 mt-2">
           <div className="flex justify-center flex">
-            <div className="flex flex-col ">
-              <h4 className="text-1xl font-normal leading-normal mt-0 mb-2 text-blueGray-800">
+            <div className="flex flex-col">
+              <h4 className="text-2xl font-normal leading-normal mt-0 mb-2 text-blueGray-800">
                 Merkle Tree root
               </h4>
-              <CopyButton content={merkle_tree_root} />
-            </div>
-            <div className="flex flex-col">
-              <h4 className="text-1xl font-normal leading-normal mb-2 text-blueGray-800">
+              <CopyButton content={merkleTreeRoot} />
+              <h4 className="text-2xl font-normal leading-normal mb-2 text-blueGray-800">
                 Subset merkle root
               </h4>
-              <CopyButton content={subset_merkle_root} />
-            </div>
+              <CopyButton content={subsetMerkleRoot} />
+            </div>  
           </div>
 
           <div className="pt-8">
@@ -108,17 +147,19 @@ const Home: NextPage = () => {
                     <th></th>
                     <th>Depositor</th>
                     <th>Commitment</th>
-                    <th>Subset root</th>
+                    <th>Transaction Hash</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.map((item, index) => (
+                  {deposits.map((deposit, index) => (
                     index % 3 === 0 && (
                       <tr key={index / 3}>
                         <th>{index / 3 + 1}</th>
-                        {[0, 1, 2].map((i) => (
-                          <td key={index + i}>{data[index + i]}</td>
-                        ))}
+                        <td key={index + 0}>{deposit?.depositor?.toString()}</td>
+                        <td key={index + 1}>{deposit?.commitment?.toString()}</td>
+                        <a href={`https://sepolia.scrollscan.dev/tx/${deposit?.tx_hash?.toString()}`} target="_blank" rel="noreferrer noopener">
+                          <td key={index + 2}>{deposit?.tx_hash?.toString()}</td>
+                        </a>
                       </tr>
                     )
                   ))}

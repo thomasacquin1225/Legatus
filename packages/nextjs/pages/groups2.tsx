@@ -302,7 +302,7 @@ const Home: NextPage = () => {
         <div className={`fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-70 z-100 ${load ? '' : 'hidden'}`}>
           <HashLoader
             color="#ffffff"
-            size="100"
+            size="100px"
             loading={load} />
         </div>
         <div className="fixed bottom-8 right-0 mb-4 mr-4">

@@ -354,7 +354,7 @@ const Home: NextPage = () => {
             <p className="text-xl font-bold">Withdraw text goes here</p>
             <HashLoader
               color="#ffffff"
-              size="100"
+              size="100px"
               loading={loading} />
           </div>
           <div className="mt-4 rounded">

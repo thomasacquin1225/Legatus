@@ -35,7 +35,7 @@ const Home: NextPage = () => {
         } catch (error) {
           throw error;
         }
-      }
+      };
       fetchMembers();
     } catch (error) {
       console.error("Error creating identity", error);
@@ -43,10 +43,7 @@ const Home: NextPage = () => {
   }, []);
 
   const joinGroup = async () => {
-
-    setTimeout(() => {
-      setLoading(true);
-    }, 100);
+    setLoading(true);
     try {
       axios.post(
         (process.env.NEXT_PUBLIC_SEMAPHORE_API_URL ?? "http://localhost:3001") + "/group/" +
@@ -215,7 +212,7 @@ const Home: NextPage = () => {
         <div className={`fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-70 z-50 ${loading ? '' : 'hidden'}`}>
           <HashLoader
             color="#ffffff"
-            size="100"
+            size="100px"
             loading={true} />
         </div>
         <div className="fixed bottom-8 right-0 mb-4 mr-4">
