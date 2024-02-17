@@ -127,9 +127,17 @@ app.get('/sub-merkle-tree', async (req, res) => {
 app.get('/hash-path/:commitment', async (req, res) => {
     try {
         const { commitment } = req.params;
+        const root = merkleTree.getRoot();
+        const treeIndex = merkleTree.getTreeIndex(commitment as string);
         const treePath = merkleTree.getPath(commitment as string);
+
+        const subRoot = subMerkleTree.getRoot();
+        const subTreeIndex = subMerkleTree.getTreeIndex(commitment as string);
         const subTreePath = subMerkleTree.getPath(commitment as string);
-        res.status(200).json({ treePath, subTreePath });
+        res.status(200).json({ 
+            tree: {root: root, index: treeIndex, hashPath: treePath}, 
+            subTree: {root: subRoot, index: subTreeIndex, hashPath: subTreePath},
+        });
     } catch (e) {
         res.status(500).json({ error: e });
     }
