@@ -37,9 +37,14 @@ async function startup() {
         if (error) {
             throw(error);
         }
+        const { data: excludedDepositors, error: error2 } = await supabase.from('excluded-depositors').select('*');
+        if (error2) {
+            throw(error2);
+        }
         if (deposits && deposits?.length > 0) {
             merkleTree.buildMerkleTree(deposits.map((d: any) => d.commitment));
-            subMerkleTree.buildMerkleTree(deposits.map((d: any) => d.commitment));
+            const excludedCommitments = deposits.filter((d: any) => excludedDepositors.includes(d.depositor)).map((d: any) => d.commitment);
+            subMerkleTree.buildMerkleTree(deposits.map((d: any) => d.commitment).filter((c: string) => !excludedCommitments.includes(c)));
         }
         
         privacyPool.addListener('Deposit', async (depositor: string, asset: string, amount: bigint, commitment: string, event: any) => {
