@@ -12,7 +12,7 @@ const ASP = require("./abis/ASP.json");
 dotenv.config();
 
 const app = express();
-const port = 3002;
+const port = process.env.PORT || 3002;
 const supabase = createClient(process.env.SUPABASE_URL as string, process.env.SUPABASE_KEY as string);
 
 app.use(cors());
