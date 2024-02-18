@@ -453,16 +453,16 @@ const Home: NextPage = () => {
                                   <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDropDeposit("ETH")}>ETH</a>
                                 </li>
                                 <li>
-                                  <a href="#" aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >UNISwap</a>
+                                  <a  aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >UNISwap</a>
                                 </li>
                                 <li>
-                                  <a href="#" aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >WBTC</a>
+                                  <a aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >WBTC</a>
                                 </li>
                                 <li>
-                                  <a href="#" aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >USDC</a>
+                                  <a  aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >USDC</a>
                                 </li>
                                 <li>
-                                  <a href="#" aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >USDT</a>
+                                  <a  aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >USDT</a>
                                 </li>
                               </ul>
                             </div>
@@ -542,13 +542,13 @@ const Home: NextPage = () => {
                                     <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDropWithdraw("aEthWETH")}>aEthWETH</a>
                                   </li>
                                   <li>
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >aEthWBTC</a>
+                                    <a  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >aEthWBTC</a>
                                   </li>
                                   <li>
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >aEthUSDC</a>
+                                    <a className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >aEthUSDC</a>
                                   </li>
                                   <li>
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >aEthUSDT</a>
+                                    <a  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >aEthUSDT</a>
                                   </li>
                                 </ul>
                               </div>
