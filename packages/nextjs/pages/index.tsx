@@ -344,7 +344,7 @@ const Home: NextPage = () => {
                   <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
                     <path d="M16 14V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h12a1 1 0 0 0 0-2h-1v-2a2 2 0 0 0 2-2ZM4 2h2v12H4V2Zm8 16H3a1 1 0 0 1 0-2h9v2Z" />
                   </svg>
-                  <span className="ms-3">Documentation</span>
+                  <a href="https://github.com/thomasacquin1225/Legatus" target="_blank"><span className="ms-3">GitHub</span></a>
                 </a>
               </li>
               <li>
@@ -383,7 +383,7 @@ const Home: NextPage = () => {
                   <div className="h-large-div bg-gray-800 mb-4 rounded">
                     <div className="flex flex-row">
                       <div className="basis-1/2">
-                        <p className="light:text-black font-bold text-4xl pt-3 pl-4 dark:text-white-200">Deposit</p>
+                        <p className="light:text-black font-bold text-4xl pt-3 pl-4 dark:text-white-200">Deposit collateral</p>
                       </div>
                       <div className="basis-1/2 flex items-center justify-end mr-4">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
@@ -482,7 +482,7 @@ const Home: NextPage = () => {
                   <div className="h-large-div-withdraw bg-gray-800 mb-4 rounded">
                     <div className="flex flex-row justify-between">
                       <div className="basis-1/2">
-                        <p className="light:text-black font-bold text-4xl pt-1 pl-4 dark:text-white-200">Withdraw</p>
+                        <p className="light:text-black font-bold text-4xl pt-1 pl-4 dark:text-white-200">Withdraw Aave aToken</p>
                       </div>
                       <div className="basis-1/2 flex items-center justify-end mr-4">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
@@ -556,9 +556,9 @@ const Home: NextPage = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="mb-6 mt-3">
-                        <label className="ml-2 block mb- text-sm font-medium text-gray-900 dark:text-white">Commitment note</label>
-                        <div className="ml-2 mr-2">
+                      <div className="mb-6 mt-2">
+                        <label className="ml-5 block mb-2 text-lg font-medium text-gray-900 dark:text-white">Commitment note</label>
+                        <div className="ml-5 mr-5">
                           <input type="text" id="large-input" placeholder="Commitment note" className="block w-full p-6 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                             onChange={(e) => setCommitmentNote(e.target.value)}
                           />
@@ -566,15 +566,15 @@ const Home: NextPage = () => {
                       </div>
 
                       <div >
-                        <label className="ml-2 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Merkle tree root</label>
-                        <div className="ml-2 mr-2">
-                          <input type="text" id="default-input" placeholder="Sub Merkle tree root" className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
+                        <label className="ml-5 block mb-2 text-lg font-medium text-gray-900 dark:text-white">Subset tree Merkle root</label>
+                        <div className="ml-5 mr-5">
+                          <input type="text" id="default-input" placeholder="Subset tree Merkle root" className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                             onChange={(e) => setSubMerkleRoot(e.target.value)}
                           />
                         </div>
                       </div>
                       <div className="flex-row">
-                        <div className="flex justify-end items-end mt-1 mr-2 ">
+                        <div className="flex justify-end items-end mt-1 mr-2 p">
                           <div className="flex">
                             <button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-full text-sm px-3 py-2  mb-2 ml-4 mt-2 dark:bg-gray-800 dark:text-white text-bold dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Max</button>
                           </div>

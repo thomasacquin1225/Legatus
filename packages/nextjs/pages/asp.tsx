@@ -10,6 +10,7 @@ interface Deposit {
   tx_hash: string;
 }
 const Home: NextPage = () => {
+  const [mounted, setMounted] = useState(false);
   const [merkleTreeRoot, setMerkleTreeRoot] = useState<string>("Unavailable");
   const [subsetMerkleRoot, setSubsetMerkleRoot] = useState<string>("Unavailable");
   const [deposits, setDeposits] = useState<Deposit[]>([]);
@@ -49,12 +50,13 @@ const Home: NextPage = () => {
         }
       };
       fetchData();
+      setMounted(true);
     } catch (error) {
       console.error("Error fetching data", error);
     }
   }, [subsetMerkleRoot, merkleTreeRoot]);
 
-
+  if (!mounted) return <></>;
   return (
     <>
       <div className="flex items-center flex-col flex-grow ">
@@ -110,7 +112,7 @@ const Home: NextPage = () => {
                   <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
                     <path d="M16 14V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h12a1 1 0 0 0 0-2h-1v-2a2 2 0 0 0 2-2ZM4 2h2v12H4V2Zm8 16H3a1 1 0 0 1 0-2h9v2Z" />
                   </svg>
-                  <span className="ms-3">Documentation</span>
+                  <a href="https://github.com/thomasacquin1225/Legatus" target="_blank"><span className="ms-3">GitHub</span></a>
                 </a>
               </li>
               <li>
