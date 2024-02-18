@@ -32,7 +32,8 @@ const Home: NextPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
-  const [selectedToken, setSelectedToken] = useState("");
+  const [selectedTokenDeposit, setSelectedTokenDeposit] = useState("");
+  const [selectedTokenWithdraw, setSelectedTokenWithdraw] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [depositAmount, setDepositAmount] = useState(0);
@@ -161,16 +162,28 @@ const Home: NextPage = () => {
     setIsModalOpen(false);
   };
 
-  const handleTokenSelect = (token: string) => {
-    setSelectedToken(token);
+  const handleTokenSelectDeposit = (token: string) => {
+    setSelectedTokenDeposit(token);
     setIsModalOpen(false);
   };
 
-  const handleTokenSelectDrop = (token: string) => {
-    setSelectedToken(token);
+  const handleTokenSelectDropDeposit = (token: string) => {
+    setSelectedTokenDeposit(token);
     setIsModalOpen(false);
     toggleDropdown();
   };
+
+  const handleTokenSelectWithdraw = (token: string) => {
+    setSelectedTokenWithdraw(token);
+    setIsModalOpen(false);
+  };
+
+  const handleTokenSelectDropWithdraw = (token: string) => {
+    setSelectedTokenWithdraw(token);
+    setIsModalOpen(false);
+    toggleDropdown();
+  };
+
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -384,33 +397,33 @@ const Home: NextPage = () => {
                             style={{ width: '200px' }}
                             onClick={toggleDropdown}
                           >
-                            {selectedToken ? selectedToken : "Select token"}
+                            {selectedTokenDeposit ? selectedTokenDeposit : "Select token"}
                             {
-                              selectedToken === "ETH" ?
+                              selectedTokenDeposit === "ETH" ?
                                 <img
                                   className="w-6 h-6 ml-4 "
                                   src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=029"
                                   alt="Eth Logo"
                                 />
-                                : selectedToken === "WBTC" ?
+                                : selectedTokenDeposit === "WBTC" ?
                                   <img
                                     className="w-6 h-6 ml-4 "
                                     src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=029"
                                     alt="UNIswap Logo"
                                   />
-                                  : selectedToken === "USDC" ?
+                                  : selectedTokenDeposit === "USDC" ?
                                     <img
                                       className="w-6 h-6 ml-4 "
                                       src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
                                       alt="UNIswap Logo"
                                     />
-                                    : selectedToken === "USDT" ?
+                                    : selectedTokenDeposit === "USDT" ?
                                       <img
                                         className="w-6 h-6 ml-4 "
                                         src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=029"
                                         alt="USDT Logo"
                                       />
-                                      : selectedToken === "UNI" ?
+                                      : selectedTokenDeposit === "UNI" ?
                                         <img
                                           className="w-6 h-6 ml-4 "
                                           src="https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=029"
@@ -429,7 +442,7 @@ const Home: NextPage = () => {
                             >
                               <ul className="py-2 text text-gray-700 dark:text-gray-200" aria-labelledby="dropdownHoverButton">
                                 <li>
-                                  <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("ETH")}>ETH</a>
+                                  <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDropDeposit("ETH")}>ETH</a>
                                 </li>
                                 <li>
                                   <a href="#" aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >UNISwap</a>
@@ -484,21 +497,21 @@ const Home: NextPage = () => {
                               style={{ width: '200px' }}
                               onClick={toggleDropdown}
                             >
-                              {selectedToken ? selectedToken : "Select token"}
+                              {selectedTokenWithdraw ? selectedTokenWithdraw : "Select token"}
                               {
-                                selectedToken === "aEthWETH" ?
+                                selectedTokenWithdraw === "aEthWETH" ?
                                   <img
                                     className="w-6 h-6 ml-4 "
                                     src="https://seeklogo.com/images/C/compound-ether-ceth-logo-1946B97AC4-seeklogo.com.png"
                                     alt="WEth Logo"
                                   />
-                                  : selectedToken === "WBTC" ?
+                                  : selectedTokenWithdraw === "WBTC" ?
                                     <img
                                       className="w-6 h-6 ml-4 "
                                       src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
                                       alt="UNIswap Logo"
                                     />
-                                    : selectedToken === "UNI" ?
+                                    : selectedTokenWithdraw === "UNI" ?
                                       <img
                                         className="w-6 h-6 ml-4 "
                                         src="https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=029"
@@ -518,7 +531,7 @@ const Home: NextPage = () => {
                               >
                                 <ul className="py-2 text text-gray-700 dark:text-gray-200" aria-labelledby="dropdownHoverButton">
                                   <li>
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("aEthWETH")}>aEthWETH</a>
+                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDropWithdraw("aEthWETH")}>aEthWETH</a>
                                   </li>
                                   <li>
                                     <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >aEthWBTC</a>
@@ -573,7 +586,7 @@ const Home: NextPage = () => {
               loading={loading || depositLoading || withdrawLoading} />
           </div>
           <div className="mt-4 rounded">
-            <button className="btn w-full" onClick={() => selectedToken ? handleAction(activeTab) : openModal()}>
+            <button className="btn w-full" onClick={() => (activeTab === "deposit" && selectedTokenDeposit) ? handleAction(activeTab) : (activeTab === "withdraw" && selectedTokenWithdraw) ? handleAction(activeTab) : openModal()}>
               <svg
                 className="w-4 h-4 me-2 -ms-1 text-[#626890]"
                 aria-hidden="true"
@@ -589,7 +602,7 @@ const Home: NextPage = () => {
                   d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"
                 ></path>
               </svg>
-              {selectedToken ? (activeTab === 'deposit' ? 'Deposit' : 'Withdraw') : 'Select a Token'}
+              {(selectedTokenDeposit || selectedTokenWithdraw) ? ((activeTab === 'deposit' && selectedTokenDeposit) ? 'Deposit' : (activeTab === 'withdraw' && selectedTokenWithdraw)? 'Withdraw' : 'Select a Token') : 'Select a Token'}
             </button>
           </div>
           <div>
@@ -620,12 +633,12 @@ const Home: NextPage = () => {
                       <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </div>
                     <div className="p-4 md:p-5 space-y-4">
-                      {selectedToken && (
+                      {(selectedTokenDeposit || selectedTokenWithdraw) && (
                         <div className="flex items-center justify-between">
                           <h3 className="text font-semibold text-gray-900 dark:text-white">
                             Selected Token:
                           </h3>
-                          <span className="text-gray-700 dark:text-gray-300">{selectedToken}</span>
+                          <span className="text-gray-700 dark:text-gray-300">{activeTab === "deposit" ? selectedTokenDeposit : selectedTokenWithdraw}</span>
                         </div>
                       )}
                       <div className="flex items-center justify-between">
@@ -641,7 +654,7 @@ const Home: NextPage = () => {
                           {
                             activeTab === "deposit" ?
                               <div>
-                                <button onClick={() => { handleTokenSelect("ETH") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+                                <button onClick={() => { handleTokenSelectDeposit("ETH") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
                                   <img
                                     className="w-6 h-6 me-2.5 "
                                     src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=029"
@@ -652,7 +665,7 @@ const Home: NextPage = () => {
                                     <span className="text-sm text-gray-400">ETH</span>
                                   </div>
                                 </button>
-                                <button disabled onClick={() => { handleTokenSelect("WBTC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                <button disabled onClick={() => { handleTokenSelectDeposit("WBTC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
                                   <img
                                     className="w-6 h-6 me-2.5 "
                                     src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
@@ -663,7 +676,7 @@ const Home: NextPage = () => {
                                     <span className="text-sm text-gray-400">WBTC</span>
                                   </div>
                                 </button>
-                                <button disabled onClick={() => { handleTokenSelect("USDC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                <button disabled onClick={() => { handleTokenSelectDeposit("USDC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
                                   <img
                                     className="w-6 h-6 me-2.5 "
                                     src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=029"
@@ -674,7 +687,7 @@ const Home: NextPage = () => {
                                     <span className="text-sm text-gray-400">USDC</span>
                                   </div>
                                 </button>
-                                <button disabled onClick={() => { handleTokenSelect("USDT") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                <button disabled onClick={() => { handleTokenSelectDeposit("USDT") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
                                   <img
                                     className="w-6 h-6 me-2.5 "
                                     src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=029"
@@ -685,7 +698,7 @@ const Home: NextPage = () => {
                                     <span className="text-sm text-gray-400">USDT</span>
                                   </div>
                                 </button>
-                                <button disabled onClick={() => { handleTokenSelect("UNI") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                <button disabled onClick={() => { handleTokenSelectDeposit("UNI") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
                                   <img
                                     className="w-6 h-6 me-2.5 "
                                     src="https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=029"
@@ -699,7 +712,7 @@ const Home: NextPage = () => {
                               </div>
                               :
                               <div>
-                                <button onClick={() => { handleTokenSelect("aEthWETH") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+                                <button onClick={() => { handleTokenSelectWithdraw("aEthWETH") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
                                   <img
                                     className="w-6 h-6 me-2.5 "
                                     src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=029"
@@ -710,7 +723,7 @@ const Home: NextPage = () => {
                                     <span className="text-sm text-gray-400">aEthWETH</span>
                                   </div>
                                 </button>
-                                <button disabled onClick={() => { handleTokenSelect("aEthWBTC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                <button disabled onClick={() => { handleTokenSelectWithdraw("aEthWBTC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
                                   <img
                                     className="w-6 h-6 me-2.5 "
                                     src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
@@ -721,7 +734,7 @@ const Home: NextPage = () => {
                                     <span className="text-sm text-gray-400">aEthWBTC</span>
                                   </div>
                                 </button>
-                                <button disabled onClick={() => { handleTokenSelect("aEthUSDC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                <button disabled onClick={() => { handleTokenSelectWithdraw("aEthUSDC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
                                   <img
                                     className="w-6 h-6 me-2.5 "
                                     src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=029"
@@ -732,7 +745,7 @@ const Home: NextPage = () => {
                                     <span className="text-sm text-gray-400">aEthUSDC</span>
                                   </div>
                                 </button>
-                                <button disabled onClick={() => { handleTokenSelect("aEthUSDT") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                <button disabled onClick={() => { handleTokenSelectWithdraw("aEthUSDT") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
                                   <img
                                     className="w-6 h-6 me-2.5 "
                                     src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=029"
