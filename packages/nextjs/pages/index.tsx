@@ -359,13 +359,21 @@ const Home: NextPage = () => {
           </div>
         </aside>
 
-        <div className="ml-44 mt-6">
-          <div className="flex justify-center flex-row">
+        <div className="ml-44 ">
+          <div className="flex justify-center flex-col items-center">
+            <p className="light:text-black flex font-bold text-3xl dark:text-white-200">Protocol :
+              <img
+                className="w-10 h-10 ml-2 "
+                src="https://cryptologos.cc/logos/aave-aave-logo.svg?v=029"
+                alt="Aave Logo"
+              />
+            </p>
+            <div className="flex justify-center flex">
+              <div className="bg-primary p-3 rounded-full">
+                <button type="button" onClick={() => setActiveTab('deposit')} className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-1 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Deposit</button>
 
-            <div className="bg-primary p-3 rounded-full">
-              <button type="button" onClick={() => setActiveTab('deposit')} className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-1 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Deposit</button>
-
-              <button type="button" onClick={() => setActiveTab('withdraw')} className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-1 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Withdraw</button>
+                <button type="button" onClick={() => setActiveTab('withdraw')} className="btn text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-1 dark:bg-gray-100 dark:hover:bg-gray-200 dark:focus:ring-gray-700 dark:border-gray-700">Withdraw</button>
+              </div>
             </div>
           </div>
           <div className="flex justify-center">
@@ -602,7 +610,7 @@ const Home: NextPage = () => {
                   d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z"
                 ></path>
               </svg>
-              {(selectedTokenDeposit || selectedTokenWithdraw) ? ((activeTab === 'deposit' && selectedTokenDeposit) ? 'Deposit' : (activeTab === 'withdraw' && selectedTokenWithdraw)? 'Withdraw' : 'Select a Token') : 'Select a Token'}
+              {(selectedTokenDeposit || selectedTokenWithdraw) ? ((activeTab === 'deposit' && selectedTokenDeposit) ? 'Deposit' : (activeTab === 'withdraw' && selectedTokenWithdraw) ? 'Withdraw' : 'Select a Token') : 'Select a Token'}
             </button>
           </div>
           <div>
