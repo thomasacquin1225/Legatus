@@ -105,8 +105,8 @@ async function startup() {
                 console.error(e);
             }
         });
-
         console.log('Started Association Set Provider (ASP) server');
+        console.log('Listening for new deposits on', (await provider.getNetwork()).chainId);
     } catch (e) {
         console.error(e);
     }

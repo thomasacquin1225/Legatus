@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import { getTargetNetwork } from "~~/utils/scaffold-eth";
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const router = useRouter();
@@ -40,7 +41,7 @@ export const Header = () => {
         <NavLink href="/">Home</NavLink>
       </li>
       <li>
-        <NavLink href="https://sepolia.scrollscan.dev/address/0xdCe231Df6213f2aF4e50542dAf26304fF0DD2A7c">
+        <NavLink href={`${getTargetNetwork()?.blockExplorers?.default?.url || ''}`+"/address/0xdCe231Df6213f2aF4e50542dAf26304fF0DD2A7c"}>
           <MagnifyingGlassIcon className="h-4 w-4" />
           Block Explorer
         </NavLink>

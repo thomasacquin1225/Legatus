@@ -4,6 +4,7 @@ import type { NextPage } from "next";
 import logo from '../public/logo.jpeg';
 import Image from "next/image";
 import axios from "axios";
+import { getTargetNetwork } from "~~/utils/scaffold-eth";
 interface Deposit {
   depositor: string;
   commitment: string;
@@ -159,7 +160,7 @@ const Home: NextPage = () => {
                         <th>{index / 3 + 1}</th>
                         <td key={index + 0}>{deposit?.depositor?.toString().substring(0,25)}...</td>
                         <td key={index + 1}>{deposit?.commitment?.toString().substring(0,30)}...</td>
-                        <a href={`https://sepolia.scrollscan.dev/tx/${deposit?.tx_hash?.toString()}`} target="_blank" rel="noreferrer noopener">
+                        <a href={`${getTargetNetwork()?.blockExplorers?.default?.url || ''}/tx/${deposit?.tx_hash?.toString()}`} target="_blank" rel="noreferrer noopener">
                           <td key={index + 2}>{deposit?.tx_hash?.toString().substring(0,32)}...</td>
                         </a>
                       </tr>
