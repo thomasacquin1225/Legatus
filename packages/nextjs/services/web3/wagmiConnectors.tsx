@@ -8,7 +8,7 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains } from "wagmi";
-import * as chains from "wagmi/chains";
+import * as defaultChains from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import scaffoldConfig from "~~/scaffold.config";
@@ -17,6 +17,40 @@ import { getTargetNetwork } from "~~/utils/scaffold-eth";
 
 const configuredNetwork = getTargetNetwork();
 const { onlyLocalBurnerWallet } = scaffoldConfig;
+
+const scrollSepolia: defaultChains.Chain = {
+  id: 534351,
+  name: "Scroll Sepolia",
+  network: "scroll-sepolia",
+  nativeCurrency: {
+    name: "Scroll Sepolia Ether",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://sepolia-rpc.scroll.io"],
+    },
+    public: {
+      http: ["https://sepolia-rpc.scroll.io"],
+    }
+  },
+  blockExplorers: {
+    scrollscan: {
+      name: "Scrollscan",
+      url: "https://sepolia.scrollscan.dev",
+    },
+    default: {
+      name: "Scrollscan",
+      url: "https://sepolia.scrollscan.dev",
+    }
+  },
+};
+
+const chains = {
+  ...defaultChains,
+  scrollSepolia,
+};
 
 // We always want to have mainnet enabled (ENS resolution, ETH price, etc). But only once.
 const enabledChains = configuredNetwork.id === 1 ? [configuredNetwork] : [configuredNetwork, chains.mainnet];

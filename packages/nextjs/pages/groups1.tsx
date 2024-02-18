@@ -7,6 +7,7 @@ import { useAccount } from "wagmi";
 import { Identity } from "@semaphore-protocol/identity";
 import axios from "axios";
 import HashLoader from "react-spinners/HashLoader";
+import { notification } from "~~/utils/scaffold-eth";
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
   const [mounted, setMounted] = useState(false);
@@ -31,7 +32,7 @@ const Home: NextPage = () => {
               }
             })
             .catch(error => {
-              console.error(error);
+              notification.error("Error occured: " + error?.toString());
             });
         } catch (error) {
           throw error;
@@ -39,7 +40,7 @@ const Home: NextPage = () => {
       };
       fetchMembers();
     } catch (error) {
-      console.error("Error creating identity", error);
+      notification.error("Error occured: " + error?.toString());
     }
     setMounted(true);
   }, []);
@@ -54,12 +55,13 @@ const Home: NextPage = () => {
       )
         .then(response => {
           setMembers([...members || [], identity?.commitment?.toString() || ""]);
+          notification.success("Joined group successfully");
         })
         .catch(error => {
-          console.error(error);
+          notification.error("Error occured: " + error?.toString());
         });
     } catch (error) {
-      console.error(error);
+      notification.error("Error occured: " + error?.toString());
     }
     setLoading(false);
   };

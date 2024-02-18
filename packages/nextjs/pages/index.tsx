@@ -11,6 +11,7 @@ import { parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { Balance } from "~~/components/scaffold-eth";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { notification } from "~~/utils/scaffold-eth";
 const { buildPoseidonOpt } = require('circomlibjs');
 
 interface IHashPaths {
@@ -41,7 +42,6 @@ const Home: NextPage = () => {
   const [loadingText, setLoadingText] = useState("");
   const [privateNote, setPrivateNote] = useState<string>("0x");
   const [commitmentNote, setCommitmentNote] = useState<string>("0x");
-  const [merkleRoot, setMerkleRoot] = useState<string>("0x");
   const [subMerkleRoot, setSubMerkleRoot] = useState<string>("0x");
   const [isChecked, setIsChecked] = useState(false);
 
@@ -55,8 +55,8 @@ const Home: NextPage = () => {
     ],
     value: depositAmount.toString() as `${number}`,
     blockConfirmations: 1,
-    onBlockConfirmation: txnReceipt => {
-      console.log("Transaction blockHash", txnReceipt.blockHash);
+    onBlockConfirmation: (txnReceipt: any) => {
+      notification.success("Transaction blockHash:", txnReceipt?.blockHash);
     },
   });
 
@@ -74,8 +74,8 @@ const Home: NextPage = () => {
       '0x',
     ],
     blockConfirmations: 1,
-    onBlockConfirmation: txnReceipt => {
-      console.log("Transaction blockHash", txnReceipt.blockHash);
+    onBlockConfirmation: (txnReceipt: any) => {
+      notification.success("Transaction blockHash:", txnReceipt?.blockHash);
     },
   });
 
@@ -93,7 +93,7 @@ const Home: NextPage = () => {
       setLoadingText("Submitting deposit transaction...");
       await depositTx();
     } catch (error) {
-      console.log(error);
+      notification.error("Error occured: " + error?.toString());
     }
     setLoading(false);
     closeDeposit();
@@ -109,7 +109,7 @@ const Home: NextPage = () => {
       const secretHash = '0x' + commitmentNote?.slice(66, 130);
       const nullifierHash = '0x' + commitmentNote?.slice(130, 194);
       const hashPaths = await getHashPath(commitment);
-      setLoadingText("Generating merkle proof...");
+      setLoadingText("Generating merkle proof (upto 2 minutes)...");
       const proof1 = await generateProof(
         secretHash,
         nullifierHash,
@@ -118,7 +118,7 @@ const Home: NextPage = () => {
         hashPaths?.tree?.hashPath,
         hashPaths?.tree?.index?.toString()
       );
-      setLoadingText("Generating subtree merkle proof...");
+      setLoadingText("Generating subtree merkle proof (upto 2 minutes)...");
       const proof2 = await generateProof(
         secretHash,
         nullifierHash,
@@ -141,7 +141,7 @@ const Home: NextPage = () => {
         ],
       });
     } catch (error) {
-      console.log(error);
+      notification.error("Error occured: " + error?.toString());
     }
     setLoading(false);
   };
@@ -220,7 +220,7 @@ const Home: NextPage = () => {
       const note = commitment + secretHash.slice(2) + nullifierHash.slice(2);
       setPrivateNote(note);
     } catch (error) {
-      console.log(error);
+      notification.error("Error occured: " + error?.toString());
     }
   }
 
@@ -232,7 +232,7 @@ const Home: NextPage = () => {
       const hashPaths: IHashPaths = response?.data;
       return hashPaths;
     } catch (error) {
-      console.log(error);
+      notification.error("Error occured: " + error?.toString());
       return {} as IHashPaths;
     }
   }
@@ -284,7 +284,7 @@ const Home: NextPage = () => {
       }
       return '0x' + proofDetailResponse?.data?.proof?.proof;
     } catch (error) {
-      console.log(error);
+      notification.error("Error occured: " + error?.toString());
     }
   }
 

@@ -5,6 +5,7 @@ import logo from '../public/logo.jpeg';
 import Image from "next/image";
 import { useAccount } from "wagmi";
 import { Identity } from "@semaphore-protocol/identity";
+import { notification } from "~~/utils/scaffold-eth";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
@@ -16,7 +17,7 @@ const Home: NextPage = () => {
       const identity = new Identity(connectedAddress!);
       setIdentity(identity);
     } catch (error) {
-      console.error("Error creating identity", error);
+      notification.error("Error occured: " + error?.toString());
     }
     setMounted(true);
   }, []);

@@ -9,6 +9,7 @@ import { Group } from "@semaphore-protocol/group";
 const { generateProof } = require("@semaphore-protocol/proof");
 import axios from "axios";
 import HashLoader from "react-spinners/HashLoader";
+import { notification } from "~~/utils/scaffold-eth";
 let load = false;
 interface FeedbackModalProps {
   isOpen: boolean;
@@ -16,7 +17,6 @@ interface FeedbackModalProps {
 }
 
 const FeedbackModal: React.FC<FeedbackModalProps & { loading: boolean; setLoading: React.Dispatch<React.SetStateAction<boolean>> }> = ({ isOpen, onClose, loading, setLoading }) => {
-
   const { address: connectedAddress } = useAccount();
   const [identity, setIdentity] = useState<Identity>();
   const [group, setGroup] = useState<Group>();
@@ -40,7 +40,7 @@ const FeedbackModal: React.FC<FeedbackModalProps & { loading: boolean; setLoadin
               }
             })
             .catch(error => {
-              console.error(error);
+              notification.error("Error occured: " + error?.toString());
             });
         } catch (error) {
           throw error;
@@ -48,7 +48,7 @@ const FeedbackModal: React.FC<FeedbackModalProps & { loading: boolean; setLoadin
       }
       fetchMembers();
     } catch (error) {
-      console.error("Error creating identity", error);
+      notification.error("Error occured: " + error?.toString());
     }
   }, []);
 
@@ -72,11 +72,14 @@ const FeedbackModal: React.FC<FeedbackModalProps & { loading: boolean; setLoadin
           proof: fullProof?.proof?.toString() || "",
         }
       )
+        .then(response => {
+          notification.success("Message sent successfully");
+        })
         .catch(error => {
-          console.error(error);
+          notification.error("Error occured: " + error?.toString());
         });
     } catch (error) {
-      console.error(error);
+      notification.error("Error occured: " + error?.toString());
     }
     onClose();
     setLoading(false);
@@ -135,7 +138,7 @@ const Home: NextPage = () => {
               setSignals(signals);
             })
             .catch(error => {
-              console.error(error);
+              notification.error("Error occured: " + error?.toString());
             });
         } catch (error) {
           throw error;
@@ -144,7 +147,7 @@ const Home: NextPage = () => {
       fetchSignals();
       setMounted(true);
     } catch (error) {
-      console.error("Error creating identity", error);
+      notification.error("Error occured: " + error?.toString());
     }
   }, []);
 
