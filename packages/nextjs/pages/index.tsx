@@ -46,7 +46,7 @@ const Home: NextPage = () => {
 
   const { writeAsync: depositTx, isLoading: depositLoading, isMining: depositMining } = useScaffoldContractWrite({
     contractName: "PrivacyPool",
-    functionName: "deposit",  
+    functionName: "deposit",
     args: [
       "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
       parseEther(depositAmount.toString()),
@@ -105,25 +105,25 @@ const Home: NextPage = () => {
         throw new Error('Invalid note length');
       }
       const commitment = commitmentNote?.slice(0, 66);
-      const secretHash = '0x'+commitmentNote?.slice(66, 130);
-      const nullifierHash = '0x'+commitmentNote?.slice(130, 194);
+      const secretHash = '0x' + commitmentNote?.slice(66, 130);
+      const nullifierHash = '0x' + commitmentNote?.slice(130, 194);
       const hashPaths = await getHashPath(commitment);
       setLoadingText("Generating merkle proof...");
       const proof1 = await generateProof(
-        secretHash, 
-        nullifierHash, 
-        commitment, 
-        hashPaths?.tree?.root, 
-        hashPaths?.tree?.hashPath, 
+        secretHash,
+        nullifierHash,
+        commitment,
+        hashPaths?.tree?.root,
+        hashPaths?.tree?.hashPath,
         hashPaths?.tree?.index?.toString()
       );
       setLoadingText("Generating subtree merkle proof...");
       const proof2 = await generateProof(
-        secretHash, 
-        nullifierHash, 
-        commitment, 
-        hashPaths?.subTree?.root, 
-        hashPaths?.subTree?.hashPath, 
+        secretHash,
+        nullifierHash,
+        commitment,
+        hashPaths?.subTree?.root,
+        hashPaths?.subTree?.hashPath,
         hashPaths?.subTree?.index?.toString()
       );
       setLoadingText("Submitting withdraw transaction...");
@@ -191,9 +191,9 @@ const Home: NextPage = () => {
     const hash = poseidon.F.toString(posHash);
     let hexString = ethers.toBigInt(hash).toString(16);
     while (hexString.length < 64) {
-        hexString = '0' + hexString;
+      hexString = '0' + hexString;
     }
-    return '0x'+hexString;
+    return '0x' + hexString;
   }
 
   const generateCommitment = async () => {
@@ -227,11 +227,11 @@ const Home: NextPage = () => {
   const generateProof = async (secret: string, nullifier: string, leaf: string, root: string, hashPath: string[], index: string) => {
     try {
       const sindriApi = axios.create({
-          baseURL: process.env.NEXT_PUBLIC_SINDRI_API_URL || "https://sindri.app/api/v1",
-          headers: {
-            "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SINDRI_API_KEY || "API-KEY"}`
-          },
-          validateStatus: (status) => status >= 200 && status < 300
+        baseURL: process.env.NEXT_PUBLIC_SINDRI_API_URL || "https://sindri.app/api/v1",
+        headers: {
+          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SINDRI_API_KEY || "API-KEY"}`
+        },
+        validateStatus: (status) => status >= 200 && status < 300
       });
       const hash_path = [...hashPath, ...Array(Math.max(0, 10 - hashPath.length)).fill('0')];
       const hashPathString = hash_path.map(value => `"${value}"`).join(",");
@@ -244,32 +244,32 @@ const Home: NextPage = () => {
           root="${root}"
           secret="${secret}"
       `;
-      
+
       const proofInput = data;
       const circuitId = process.env.NEXT_PUBLIC_SINDRI_CIRCUIT_ID || "5defe5f6-7eb5-47e7-a59b-07f3beb97754";
       const proveResponse = await sindriApi.post(`/circuit/${circuitId}/prove`, {
-          proof_input: proofInput,
+        proof_input: proofInput,
       });
       const proofId = proveResponse.data.proof_id;
 
       let startTime = Date.now();
       let proofDetailResponse;
       while (true) {
-          proofDetailResponse = await sindriApi.get(`/proof/${proofId}/detail`);
-          const { status } = proofDetailResponse.data;
-          const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
-          if (status === "Ready") {
-              break;
-          } else if (status === "Failed") {
-              throw new Error(
-                  `Polling failed after ${elapsedSeconds} seconds: ${proofDetailResponse.data.error}.`,
-              );
-          } else if (Date.now() - startTime > 30 * 60 * 1000) {
-              throw new Error("Timed out after 30 minutes.");
-          }
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+        proofDetailResponse = await sindriApi.get(`/proof/${proofId}/detail`);
+        const { status } = proofDetailResponse.data;
+        const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
+        if (status === "Ready") {
+          break;
+        } else if (status === "Failed") {
+          throw new Error(
+            `Polling failed after ${elapsedSeconds} seconds: ${proofDetailResponse.data.error}.`,
+          );
+        } else if (Date.now() - startTime > 30 * 60 * 1000) {
+          throw new Error("Timed out after 30 minutes.");
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
-      return '0x'+proofDetailResponse?.data?.proof?.proof;
+      return '0x' + proofDetailResponse?.data?.proof?.proof;
     } catch (error) {
       console.log(error);
     }
@@ -287,7 +287,7 @@ const Home: NextPage = () => {
               <li>
                 <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                   <Image
-                    className="w-8 h-8 "
+                    className="w-10 h-10 "
                     src={logo}
                     alt="Bitcoin Logo"
                   />
@@ -373,8 +373,8 @@ const Home: NextPage = () => {
                     </div>
                     <form className="pt-4">
                       <div className="relative px-2 flex">
-                        <input type="text" placeholder="Enter amount" className="input text-xl font-bold input-ghost w-2/3 text-bold" 
-                          onChange={(e) => setDepositAmount(parseFloat(e.target.value))} 
+                        <input type="text" placeholder="Enter amount" className="input text-xl font-bold input-ghost w-2/3 text-bold"
+                          onChange={(e) => setDepositAmount(parseFloat(e.target.value))}
                         />
                         <div>
                           <button
@@ -395,35 +395,53 @@ const Home: NextPage = () => {
                                 : selectedToken === "WBTC" ?
                                   <img
                                     className="w-6 h-6 ml-4 "
-                                    src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
+                                    src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=029"
                                     alt="UNIswap Logo"
                                   />
-                                    : selectedToken === "UNI" ?
+                                  : selectedToken === "USDC" ?
+                                    <img
+                                      className="w-6 h-6 ml-4 "
+                                      src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
+                                      alt="UNIswap Logo"
+                                    />
+                                    : selectedToken === "USDT" ?
                                       <img
                                         className="w-6 h-6 ml-4 "
-                                        src="https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=029"
-                                        alt="UNIswap Logo"
+                                        src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=029"
+                                        alt="USDT Logo"
                                       />
-                                      :
-                                      <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
-                                      </svg>
+                                      : selectedToken === "UNI" ?
+                                        <img
+                                          className="w-6 h-6 ml-4 "
+                                          src="https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=029"
+                                          alt="UNIswap Logo"
+                                        />
+                                        :
+                                        <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
+                                        </svg>
                             }
                           </button>
                           {isOpen && (
                             <div
                               id="dropdownHover"
-                              className=" mx-10 z-10 bg-white divide-y rounded-lg shadow  dark:bg-gray-700"
+                              className="z-1 absolute w-52 mx-10 z-1 bg-white divide-y rounded-lg shadow dark:bg-gray-700 mx-10 z-10 bg-white divide-y rounded-lg shadow  dark:bg-gray-700"
                             >
                               <ul className="py-2 text text-gray-700 dark:text-gray-200" aria-labelledby="dropdownHoverButton">
                                 <li>
                                   <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("ETH")}>ETH</a>
                                 </li>
                                 <li>
-                                  <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("UNI")}>UNISwap</a>
+                                  <a href="#" aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >UNISwap</a>
                                 </li>
                                 <li>
-                                  <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("WBTC")}>WBTC</a>
+                                  <a href="#" aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >WBTC</a>
+                                </li>
+                                <li>
+                                  <a href="#" aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >USDC</a>
+                                </li>
+                                <li>
+                                  <a href="#" aria-disabled className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >USDT</a>
                                 </li>
                               </ul>
                             </div>
@@ -433,7 +451,7 @@ const Home: NextPage = () => {
                       <div className="flex-row">
                         <div className="flex justify-end items-end mt-4">
                           <div className="flex">
-                          <p className="font-bold text-white pt-3"><Balance address={connectedAddress} /></p>
+                            <p className="font-bold text-white pt-3"><Balance address={connectedAddress} /></p>
                           </div>
                         </div>
                       </div>
@@ -456,7 +474,7 @@ const Home: NextPage = () => {
                       <div className="relative px-2">
                         <div className="relative px-2 flex">
                           <input type="text" placeholder="Enter amount" className="input text-xl input-ghost w-2/3 text-bold text-lg font-bold"
-                            onChange={(e) => setWithdrawAmount(parseFloat(e.target.value))} 
+                            onChange={(e) => setWithdrawAmount(parseFloat(e.target.value))}
                           />
                           <div>
                             <button
@@ -468,11 +486,11 @@ const Home: NextPage = () => {
                             >
                               {selectedToken ? selectedToken : "Select token"}
                               {
-                                selectedToken === "ETH" ?
+                                selectedToken === "aEthWETH" ?
                                   <img
                                     className="w-6 h-6 ml-4 "
-                                    src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=029"
-                                    alt="Eth Logo"
+                                    src="https://seeklogo.com/images/C/compound-ether-ceth-logo-1946B97AC4-seeklogo.com.png"
+                                    alt="WEth Logo"
                                   />
                                   : selectedToken === "WBTC" ?
                                     <img
@@ -480,16 +498,16 @@ const Home: NextPage = () => {
                                       src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
                                       alt="UNIswap Logo"
                                     />
-                                      : selectedToken === "UNI" ?
-                                        <img
-                                          className="w-6 h-6 ml-4 "
-                                          src="https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=029"
-                                          alt="UNIswap Logo"
-                                        />
-                                        :
-                                        <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
-                                        </svg>
+                                    : selectedToken === "UNI" ?
+                                      <img
+                                        className="w-6 h-6 ml-4 "
+                                        src="https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=029"
+                                        alt="UNIswap Logo"
+                                      />
+                                      :
+                                      <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
+                                      </svg>
                               }
                             </button>
                             {isOpen && (
@@ -500,13 +518,16 @@ const Home: NextPage = () => {
                               >
                                 <ul className="py-2 text text-gray-700 dark:text-gray-200" aria-labelledby="dropdownHoverButton">
                                   <li>
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("ETH")}>ETH</a>
+                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("aEthWETH")}>aEthWETH</a>
                                   </li>
                                   <li>
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("UNI")}>UNISwap</a>
+                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >aEthWBTC</a>
                                   </li>
                                   <li>
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => handleTokenSelectDrop("WBTC")}>WBTC</a>
+                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >aEthUSDC</a>
+                                  </li>
+                                  <li>
+                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white opacity-60" >aEthUSDT</a>
                                   </li>
                                 </ul>
                               </div>
@@ -517,7 +538,7 @@ const Home: NextPage = () => {
                       <div className="mb-6 mt-3">
                         <label className="ml-2 block mb- text-sm font-medium text-gray-900 dark:text-white">Commitment note</label>
                         <div className="ml-2 mr-2">
-                          <input type="text" id="large-input" placeholder="Commitment note" className="block w-full p-6 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500" 
+                          <input type="text" id="large-input" placeholder="Commitment note" className="block w-full p-6 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                             onChange={(e) => setCommitmentNote(e.target.value)}
                           />
                         </div>
@@ -526,7 +547,7 @@ const Home: NextPage = () => {
                       <div >
                         <label className="ml-2 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Merkle tree root</label>
                         <div className="ml-2 mr-2">
-                          <input type="text" id="default-input" placeholder="Sub Merkle tree root" className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500" 
+                          <input type="text" id="default-input" placeholder="Sub Merkle tree root" className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500"
                             onChange={(e) => setSubMerkleRoot(e.target.value)}
                           />
                         </div>
@@ -617,39 +638,113 @@ const Home: NextPage = () => {
                       </div>
                       <div className="flex flex-col gap-2">
                         <div className="w-full bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 ">
-                          <button onClick={() => { handleTokenSelect("WBTC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
-                            <img
-                              className="w-6 h-6 me-2.5 "
-                              src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
-                              alt="UNIswap Logo"
-                            />
-                            <div className="flex flex-col justify-start items-start">
-                              Wrapped Bitcoin
-                              <span className="text-sm text-gray-400">WBTC</span>
-                            </div>
-                          </button>
-                          <button onClick={() => { handleTokenSelect("UNI") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
-                            <img
-                              className="w-6 h-6 me-2.5 "
-                              src="https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=029"
-                              alt="UNIswap Logo"
-                            />
-                            <div className="flex flex-col justify-start items-start">
-                              Uniswap
-                              <span className="text-sm text-gray-400">UNI</span>
-                            </div>
-                          </button>
-                          <button onClick={() => { handleTokenSelect("ETH") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
-                            <img
-                              className="w-6 h-6 me-2.5 "
-                              src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=029"
-                              alt="Eth Logo"
-                            />
-                            <div className="flex flex-col justify-start items-start ">
-                              Ethereum
-                              <span className="text-sm text-gray-400">ETH</span>
-                            </div>
-                          </button>                      
+                          {
+                            activeTab === "deposit" ?
+                              <div>
+                                <button onClick={() => { handleTokenSelect("ETH") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+                                  <img
+                                    className="w-6 h-6 me-2.5 "
+                                    src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=029"
+                                    alt="Eth Logo"
+                                  />
+                                  <div className="flex flex-col justify-start items-start ">
+                                    Ethereum
+                                    <span className="text-sm text-gray-400">ETH</span>
+                                  </div>
+                                </button>
+                                <button disabled onClick={() => { handleTokenSelect("WBTC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                  <img
+                                    className="w-6 h-6 me-2.5 "
+                                    src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
+                                    alt="UNIswap Logo"
+                                  />
+                                  <div className="flex flex-col justify-start items-start">
+                                    Wrapped Bitcoin
+                                    <span className="text-sm text-gray-400">WBTC</span>
+                                  </div>
+                                </button>
+                                <button disabled onClick={() => { handleTokenSelect("USDC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                  <img
+                                    className="w-6 h-6 me-2.5 "
+                                    src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=029"
+                                    alt="USDC Logo"
+                                  />
+                                  <div className="flex flex-col justify-start items-start">
+                                    USDC
+                                    <span className="text-sm text-gray-400">USDC</span>
+                                  </div>
+                                </button>
+                                <button disabled onClick={() => { handleTokenSelect("USDT") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                  <img
+                                    className="w-6 h-6 me-2.5 "
+                                    src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=029"
+                                    alt="USDt Logo"
+                                  />
+                                  <div className="flex flex-col justify-start items-start">
+                                    USDT
+                                    <span className="text-sm text-gray-400">USDT</span>
+                                  </div>
+                                </button>
+                                <button disabled onClick={() => { handleTokenSelect("UNI") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                  <img
+                                    className="w-6 h-6 me-2.5 "
+                                    src="https://cryptologos.cc/logos/uniswap-uni-logo.svg?v=029"
+                                    alt="UNIswap Logo"
+                                  />
+                                  <div className="flex flex-col justify-start items-start">
+                                    Uniswap
+                                    <span className="text-sm text-gray-400">UNI</span>
+                                  </div>
+                                </button>
+                              </div>
+                              :
+                              <div>
+                                <button onClick={() => { handleTokenSelect("aEthWETH") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+                                  <img
+                                    className="w-6 h-6 me-2.5 "
+                                    src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=029"
+                                    alt="Eth Logo"
+                                  />
+                                  <div className="flex flex-col justify-start items-start ">
+                                    Aave Ethereum WETH
+                                    <span className="text-sm text-gray-400">aEthWETH</span>
+                                  </div>
+                                </button>
+                                <button disabled onClick={() => { handleTokenSelect("aEthWBTC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                  <img
+                                    className="w-6 h-6 me-2.5 "
+                                    src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.svg?v=029"
+                                    alt="UNIswap Logo"
+                                  />
+                                  <div className="flex flex-col justify-start items-start">
+                                    Aave Ethereum Wrapped Bitcoin
+                                    <span className="text-sm text-gray-400">aEthWBTC</span>
+                                  </div>
+                                </button>
+                                <button disabled onClick={() => { handleTokenSelect("aEthUSDC") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                  <img
+                                    className="w-6 h-6 me-2.5 "
+                                    src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=029"
+                                    alt="USDC Logo"
+                                  />
+                                  <div className="flex flex-col justify-start items-start">
+                                    Aave Etherum USDC
+                                    <span className="text-sm text-gray-400">aEthUSDC</span>
+                                  </div>
+                                </button>
+                                <button disabled onClick={() => { handleTokenSelect("aEthUSDT") }} type="button" className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white opacity-60">
+                                  <img
+                                    className="w-6 h-6 me-2.5 "
+                                    src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=029"
+                                    alt="USDt Logo"
+                                  />
+                                  <div className="flex flex-col justify-start items-start">
+                                    Aave Etherum USDT
+                                    <span className="text-sm text-gray-400">aEthUSDT</span>
+                                  </div>
+                                </button>
+                              </div>
+                          }
                         </div>
                       </div>
                     </div>
